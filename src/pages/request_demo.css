@@ -1,0 +1,26 @@
+.request_demo-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h2 {
+    color: #007bff;
+  }
+  
+  .request_demo-container .form-label {
+    font-weight: bold;
+    color: #495057;
+  }
+  
+  .request_demo-container .form-control,
+  .request_demo-container .form-select {
+    border-radius: 0.25rem;
+  }
+  
+  .request_demo-container .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    font-weight: bold;
+  }
+  

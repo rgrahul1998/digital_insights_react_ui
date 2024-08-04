@@ -1,0 +1,26 @@
+.onboarding-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h2 {
+    color: #007bff;
+  }
+  
+  .onboarding-container .form-label {
+    font-weight: bold;
+    color: #495057;
+  }
+  
+  .onboarding-container .form-control,
+  .onboarding-container .form-select {
+    border-radius: 0.25rem;
+  }
+  
+  .onboarding-container .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    font-weight: bold;
+  }
+  

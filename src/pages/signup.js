@@ -14,7 +14,11 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import zxcvbn from 'zxcvbn';
 
 const defaultTheme = createTheme();
 
@@ -24,13 +28,46 @@ export default function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [contactNo, setContactNo] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0);
   const [error, setError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+
+    const strength = zxcvbn(newPassword).score;
+    setPasswordStrength(strength);
+
+    // Validate password
+    const hasNumber = /\d/;
+    const hasLetter = /[a-zA-Z]/;
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/;
+
+    if (!hasNumber.test(newPassword) || !hasLetter.test(newPassword) || !hasSpecialChar.test(newPassword) || newPassword.length < 8) {
+      setPasswordError('Password must contain at least 8 characters, including letters, digits, and special characters.');
+    } else {
+      setPasswordError('');
+    }
+  };
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleSignupClick = async (e) => {
     e.preventDefault();
 
     if (!fullName || !email || !password || !contactNo) {
       toast.error('All fields are mandatory', {
+        position: "top-right",
+      });
+      return;
+    }
+
+    if (passwordError) {
+      toast.error('Please ensure the password meets the criteria', {
         position: "top-right",
       });
       return;
@@ -121,12 +158,33 @@ export default function SignUp() {
                   fullWidth
                   name="password"
                   label="Password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   id="password"
                   autoComplete="new-password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
+                <Typography variant="body2" color="textSecondary">
+                  Password Strength: {['Weak', 'Weak', 'Fair', 'Good', 'Strong'][passwordStrength]}
+                </Typography>
+                {passwordError && (
+                  <Typography variant="body2" color="error">
+                    {passwordError}
+                  </Typography>
+                )}
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -145,6 +203,7 @@ export default function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={passwordError !== ''}
             >
               Sign Up
             </Button>

@@ -35,7 +35,7 @@ function Onboarding() {
     try {
       const response = await axios.post('https://insights.asiot.net/api/method/digital_insights.digital_insights.api.company_onboard.create_company_onboard_api', null, {
         params: {
-          user: formData.user,
+          user: localStorage.getItem("user"),
           company: formData.company,
           name: formData.name,
           sector: formData.sector,

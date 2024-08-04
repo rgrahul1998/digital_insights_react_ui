@@ -65,19 +65,6 @@ function Onboarding() {
       <h2 className="text-center mb-4">Onboarding Form</h2>
       <Form className="p-4 border rounded shadow-sm bg-light" onSubmit={handleSubmit}>
         <Row className="mb-3">
-          <Form.Group as={Col} controlId="formGridUserEmail">
-            <Form.Label>User Email</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter user email id"
-              name="user"
-              value={formData.user}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-        </Row>
-        <Row className="mb-3">
           <Form.Group as={Col} controlId="formGridCompany">
             <Form.Label>Company</Form.Label>
             <Form.Control

@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import axios from 'axios'
-import { CCloseButton, CSidebar, CSidebarHeader, CNavItem } from '@coreui/react'
+import { CCloseButton, CSidebar, CSidebarHeader, CNavItem, CSidebarBrand } from '@coreui/react'
 import { AppSidebarNav } from './AppSidebarNav'
 import _nav from '../_nav'
+import CIcon from '@coreui/icons-react'
+import { logo } from 'src/assets/brand/logo'
+
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
@@ -55,11 +58,7 @@ const AppSidebar = () => {
       }}
     >
       <CSidebarHeader className="border-bottom">
-        <CCloseButton
-          className="d-lg-none"
-          dark
-          onClick={() => dispatch({ type: 'set', sidebarShow: false })}
-        />
+       
       </CSidebarHeader>
       <AppSidebarNav items={navigation} />
     </CSidebar>

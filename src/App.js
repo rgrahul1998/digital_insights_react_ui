@@ -37,12 +37,12 @@ const App = () => {
 
 const Main = () => {
   const location = useLocation();
-  const noFooterPaths = ['/login', '/signup', '/dashboard'];
+  const noFooterPaths = ['/login', '/signup', '/dashboard', "/onboarding"];
   const isAuthenticated = !!localStorage.getItem('access_token');
 
   return (
     <>
-      {location.pathname !== '/dashboard' && <NavBar />}
+      {location.pathname !== '/dashboard' && location.pathname !== '/onboarding' && <NavBar />}
 
       <Routes>
         <Route exact path="/" element={<LandingPage />} />

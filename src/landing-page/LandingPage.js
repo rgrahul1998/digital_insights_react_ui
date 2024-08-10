@@ -5,10 +5,12 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import LogoCollection from './components/LogoCollection';
-import Highlights from './components/Highlights';
-import Pricing from './components/Pricing';
-import Home from '../pages/home';
-import Product from './components/Product';
+import Highlights from './components/AssitantAi';
+import Pricing from './components/RelationshipManangement';
+import Home from './components/Hero';
+import Product from './components/DataIntegration';
+import ProductPortfolio from './components/ProductPortfiolio';
+import CustomerManagement from './components/CustomerManagement';
 
 
 export default function LandingPage() {
@@ -28,6 +30,10 @@ export default function LandingPage() {
         <Highlights />
         <Divider />
         <Pricing />
+        <Divider />
+        <CustomerManagement />
+        <Divider />
+        <ProductPortfolio />
         <Divider />
       </Box>
 

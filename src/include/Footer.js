@@ -99,19 +99,16 @@ export default function Footer() {
                 Product
               </Typography>
               <Link color={textColor} href="#" fontSize={18}>
-                Features
+                Automation 
               </Link>
               <Link color={textColor} href="#" fontSize={18}>
-                Testimonials
+                AI intelligence  
               </Link>
               <Link color={textColor} href="#" fontSize={18}>
-                Highlights
+                Relationship Management 
               </Link>
               <Link color={textColor} href="#" fontSize={18}>
-                Pricing
-              </Link>
-              <Link color={textColor} href="#" fontSize={18}>
-                FAQs
+                CRM system 
               </Link>
             </Box>
             <Box

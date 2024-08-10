@@ -68,7 +68,7 @@ function NavBar() {
                 <NavDropdown.Item href="/about/Team">Team</NavDropdown.Item>
                 <NavDropdown.Item href="/about/careers">Careers</NavDropdown.Item>
                 <NavDropdown.Item href="/about/press">Press</NavDropdown.Item>
-                <NavDropdown.Divider />
+                {/* <NavDropdown.Divider /> */}
               </NavDropdown>
               <Nav.Link href="/contact">Contact</Nav.Link>
             </Nav>

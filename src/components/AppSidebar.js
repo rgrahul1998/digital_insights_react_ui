@@ -45,6 +45,9 @@ const AppSidebar = () => {
     }
     return item
   })
+  const navigation1 = _nav.filter((item) => item.name !== 'Company')
+  const navigation2 = navigation.filter((item) => item.name === 'Company')
+
 
   return (
     <CSidebar
@@ -58,9 +61,9 @@ const AppSidebar = () => {
       }}
     >
       <CSidebarHeader className="border-bottom">
-       
+      <AppSidebarNav items={navigation2} />
       </CSidebarHeader>
-      <AppSidebarNav items={navigation} />
+      <AppSidebarNav items={navigation1} />
     </CSidebar>
   )
 }

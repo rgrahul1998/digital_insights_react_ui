@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import axios from 'axios'
-import { CCloseButton, CSidebar, CSidebarHeader, CNavItem, CSidebarBrand } from '@coreui/react'
+import { CSidebar, CSidebarHeader, CNavItem, CSidebarBrand } from '@coreui/react'
 import { AppSidebarNav } from './AppSidebarNav'
 import _nav from '../_nav'
-import CIcon from '@coreui/icons-react'
-import { logo } from 'src/assets/brand/logo'
 
 
 const AppSidebar = () => {
@@ -46,7 +44,7 @@ const AppSidebar = () => {
     return item
   })
   const navigation1 = _nav.filter((item) => item.name !== 'Company')
-  const navigation2 = navigation.filter((item) => item.name === 'Company')
+  const company = navigation.filter((item) => item.name === 'Company')
 
 
   return (
@@ -61,7 +59,7 @@ const AppSidebar = () => {
       }}
     >
       <CSidebarHeader className="border-bottom">
-      <AppSidebarNav items={navigation2} />
+        <AppSidebarNav items={company} />
       </CSidebarHeader>
       <AppSidebarNav items={navigation1} />
     </CSidebar>

@@ -11,6 +11,7 @@ import Home from './components/Hero';
 import Product from './components/DataIntegration';
 import ProductPortfolio from './components/ProductPortfiolio';
 import CustomerManagement from './components/CustomerManagement';
+import BlogSlider from './components/BlogSlider';
 
 
 export default function LandingPage() {
@@ -34,6 +35,8 @@ export default function LandingPage() {
         <CustomerManagement />
         <Divider />
         <ProductPortfolio />
+        <Divider />
+        <BlogSlider />
         <Divider />
       </Box>
 

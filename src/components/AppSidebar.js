@@ -5,7 +5,6 @@ import { CSidebar, CSidebarHeader, CNavItem, CSidebarBrand } from '@coreui/react
 import { AppSidebarNav } from './AppSidebarNav'
 import _nav from '../_nav'
 
-
 const AppSidebar = () => {
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
@@ -21,9 +20,11 @@ const AppSidebar = () => {
           },
         });
         console.log(response)
-        setCompanies(response.data.message.data)
+        const fetchedCompanies = response?.data?.message?.data || []  // Safe access and fallback to empty array
+        setCompanies(fetchedCompanies)
       } catch (error) {
         console.error('Error fetching companies:', error)
+        setCompanies([])  // Ensure companies is an empty array on error
       }
     }
 
@@ -31,7 +32,7 @@ const AppSidebar = () => {
   }, [])
 
   const navigation = _nav.map((item) => {
-    if (item.name === 'Company') {
+    if (item.name === 'Company' && Array.isArray(companies)) {
       return {
         ...item,
         items: companies.map((company) => ({
@@ -43,9 +44,9 @@ const AppSidebar = () => {
     }
     return item
   })
+
   const navigation1 = _nav.filter((item) => item.name !== 'Company')
   const company = navigation.filter((item) => item.name === 'Company')
-
 
   return (
     <CSidebar
@@ -59,7 +60,7 @@ const AppSidebar = () => {
       }}
     >
       <CSidebarHeader className="border-bottom">
-        <AppSidebarNav items={company} />
+        {company.length > 0 && <AppSidebarNav items={company} />}
       </CSidebarHeader>
       <AppSidebarNav items={navigation1} />
     </CSidebar>

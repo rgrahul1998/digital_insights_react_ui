@@ -14,7 +14,7 @@ const AppSidebar = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await axios.post('https://insights.asiot.net/api/method/digital_insights.digital_insights.api.user_associated_company.user_associated_company', null, {
+        const response = await axios.post(API_URL + '/api/method/digital_insights.digital_insights.api.user_associated_company.user_associated_company', null, {
           params: {
             user: localStorage.getItem("user")
           },

@@ -85,9 +85,7 @@ function SideNav() {
     if (!token) {
       navigate('/login');
     } else {
-      axios.get('http://127.0.0.1:8000/api/method/digital_insights.digital_insights.api.user_associated_company.user_associated_company', { // Replace with your Frappe API endpoint
-
-      })
+      axios.get(API_URL + '/api/method/digital_insights.digital_insights.api.user_associated_company.user_associated_company', {})
       .then(response => {
         console.log(response.data.message.data)
         setCompanies(response.data.message.data || []); // Ensure it's always an array

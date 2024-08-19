@@ -9,6 +9,7 @@ import Container from 'react-bootstrap/Container';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './request_demo.css'; // Assuming you have a CSS file for custom styling
+import API_URL from '../config';
 
 function RequestDemo() {
   const [formData, setFormData] = useState({
@@ -33,7 +34,7 @@ function RequestDemo() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://insights.asiot.net/api/method/digital_insights.digital_insights.api.request_demo.create_request_demo', null, {
+      const response = await axios.post(API_URL + '/api/method/digital_insights.digital_insights.api.request_demo.create_request_demo', null, {
         params: {
           work_email: formData.work_email,
           name: formData.name,

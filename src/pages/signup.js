@@ -19,6 +19,7 @@ import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import zxcvbn from 'zxcvbn';
+import API_URL from '../config';
 
 const defaultTheme = createTheme();
 
@@ -74,7 +75,7 @@ export default function SignUp() {
     }
 
     try {
-      const response = await axios.post('https://insights.asiot.net/api/method/digital_insights.digital_insights.api.signup.create_user_api', null, {
+      const response = await axios.post(API_URL + '/api/method/digital_insights.digital_insights.api.signup.create_user_api', null, {
         params: {
           email: email,
           password: password,

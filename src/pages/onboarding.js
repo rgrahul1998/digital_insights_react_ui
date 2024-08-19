@@ -9,6 +9,7 @@ import Container from 'react-bootstrap/Container';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './onboarding.css'; // Assuming you have a CSS file for custom styling
+import API_URL from '../config';
 
 function Onboarding() {
   const [formData, setFormData] = useState({
@@ -33,7 +34,7 @@ function Onboarding() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://insights.asiot.net/api/method/digital_insights.digital_insights.api.company_onboard.create_company_onboard_api', null, {
+      const response = await axios.post(API_URL + '/api/method/digital_insights.digital_insights.api.company_onboard.create_company_onboard_api', null, {
         params: {
           user: localStorage.getItem("user"),
           company: formData.company,
@@ -42,8 +43,6 @@ function Onboarding() {
           location: formData.location
         },
       });
-
-      console.log(11111111, response);
 
       if (response.data.message.status === 'success') {
         toast.success(response.data.message.message);

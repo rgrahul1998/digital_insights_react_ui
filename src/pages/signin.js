@@ -14,6 +14,7 @@ import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import google_image from "../images/web_light_sq_SI@4x.png";
+import API_URL from '../config';
 
 const defaultTheme = createTheme();
 
@@ -31,7 +32,7 @@ export default function SignIn() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        'https://insights.asiot.net/api/method/digital_insights.digital_insights.api.login.get_access_api_token',
+        API_URL + '/api/method/digital_insights.digital_insights.api.login.get_access_api_token',
         null,
         {
           params: {

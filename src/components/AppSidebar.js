@@ -4,6 +4,7 @@ import axios from 'axios'
 import { CSidebar, CSidebarHeader, CNavItem, CSidebarBrand } from '@coreui/react'
 import { AppSidebarNav } from './AppSidebarNav'
 import _nav from '../_nav'
+import API_URL from '../config'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()

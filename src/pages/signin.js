@@ -15,6 +15,7 @@ import Divider from '@mui/material/Divider';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GoogleLogin } from '@react-oauth/google';
 import API_URL from '../config';
+import Logo from '../assets/brand/adlogo.png';
 
 const defaultTheme = createTheme();
 
@@ -96,9 +97,16 @@ export default function SignIn() {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
+          <img
+            src={Logo}
+            alt="Logo"
+            style={{
+              width: '100px', // Adjust size as needed
+              height: 'auto',
+              borderRadius: '50%', // Optional: to give a circular appearance
+              margin: '16px 0', // Adjust margin as needed
+            }}
+          />
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>

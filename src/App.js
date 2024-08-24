@@ -5,7 +5,7 @@ import { BrowserRouter, Route, Routes, useLocation, Navigate } from 'react-route
 import { CSpinner } from '@coreui/react';
 import './scss/style.scss';
 import DataConnect from './views/data_connect/DataConnect';
-import DataSourceTable from './views/data_connect/DataSourceTable';
+// import DataSourceTable from './views/data_connect/DataSourceTable';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // Lazy-loaded components
@@ -73,11 +73,11 @@ const Main = () => {
             path="/dashboard"
             element={isAuthenticated ? <DashboardLayout /> : <Navigate to="/login" />}
           />
-          <Route
+          {/* <Route
             exact
             path="/database/data-connect/data-source"
             element={isAuthenticated ? <DataSourceTable /> : <Navigate to="/login" />}
-          />
+          /> */}
           <Route path="*" element={<Page404 />} />
         </Routes>
 

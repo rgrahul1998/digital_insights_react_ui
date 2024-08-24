@@ -48,7 +48,7 @@ export default function DataIntegration() {
           <Grid
             item
             xs={12}
-            md={6}
+            md={5}
             sx={{
               display: 'flex',
               flexDirection: 'column',
@@ -85,7 +85,7 @@ export default function DataIntegration() {
           <Grid
             item
             xs={12}
-            md={6}
+            md={7}
             sx={{
               display: 'flex',
               alignItems: 'center',

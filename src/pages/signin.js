@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import google_image from "../images/web_light_sq_SI@4x.png";
+import { GoogleLogin } from '@react-oauth/google';
 import API_URL from '../config';
 
 const defaultTheme = createTheme();
@@ -42,7 +42,6 @@ export default function SignIn() {
           withCredentials: true,
         }
       );
-      console.log(response)
       if (response.data.message.msg === 'success') {
         const token = response.data.message.data.access_token.access_token;
         const user = response.data.message.data.user;
@@ -64,8 +63,25 @@ export default function SignIn() {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    // Handle Google sign-in logic here
+  const handleGoogleSignIn = async (credentialResponse) => {
+    try {
+      const { code } = credentialResponse;
+      const response = await axios.post(`${API_URL}/api/method/frappe.integrations.oauth2_logins.login_via_google`, {
+        code,
+        state: JSON.stringify({ token: true, redirect_to: '/dashboard' }), // Add relevant state information
+      });
+
+      if (response.data.message === 'Logged In') {
+        // Handle login success
+        localStorage.setItem('access_token', response.data.access_token);
+        navigate('/dashboard');
+      } else {
+        setError('Google login failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Google login error:', error);
+      setError('Google login failed. Please try again.');
+    }
   };
 
   return (
@@ -142,26 +158,10 @@ export default function SignIn() {
 
           <Divider sx={{ width: '100%', mt: 2, mb: 2 }}>or</Divider>
 
-          <Button
-            fullWidth
-            variant="outlined"
-            onClick={handleGoogleSignIn}
-            sx={{
-              mt: 1,
-              mb: 2,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textTransform: 'none',
-            }}
-          >
-            <img
-              src={google_image}
-              alt="Google sign-in"
-              style={{ width: '20px', height: '20px', marginRight: '8px' }}
-            />
-            Sign in with Google
-          </Button>
+          <GoogleLogin
+            onSuccess={handleGoogleSignIn}
+            onError={() => setError('Google login failed. Please try again.')}
+          />
         </Box>
       </Container>
     </ThemeProvider>

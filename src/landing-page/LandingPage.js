@@ -8,7 +8,7 @@ import LogoCollection from './components/LogoCollection';
 import Highlights from './components/AssitantAi';
 import Pricing from './components/RelationshipManangement';
 import Home from './components/Hero';
-import Product from './components/DataIntegration';
+import DataIntegration from './components/DataIntegration';
 import ProductPortfolio from './components/ProductPortfiolio';
 import CustomerManagement from './components/CustomerManagement';
 import BlogSlider from './components/BlogSlider';
@@ -26,7 +26,7 @@ export default function LandingPage() {
       <Box sx={{ bgcolor: 'background.default' }}>
         <LogoCollection />
         <Divider />
-        <Product />
+        <DataIntegration />
         <Divider />
         <Highlights />
         <Divider />

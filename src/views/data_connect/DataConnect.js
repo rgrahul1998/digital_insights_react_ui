@@ -6,7 +6,7 @@ import {
 } from '@coreui/react';
 import axios from 'axios';
 import API_URL from '../../config';
-import ActionButtons from './ActionButtons';
+import DataConnectTable from './DataConnectTable';
 
 const DataConnect = () => {
     const [modal, setModal] = useState(false);
@@ -41,8 +41,6 @@ const DataConnect = () => {
         console.log({"database": formattedDatabase})
         try {
             const response = await axios.post(API_URL + '/api/method/insights.api.setup.test_database_connection', {"database": formattedDatabase});
-            console.log(11111111111, response)
-            console.log(11111111111, response.data.message)
             if (response.data.message[0] === 'Account') {
                 setStatus('The database is now active.');
                 const response1 = await axios.post(API_URL + '/api/method/insights.api.setup.add_database', {"database": formattedDatabase});
@@ -73,8 +71,9 @@ const DataConnect = () => {
                                 </CDropdownMenu>
                             </CDropdown>
                         </div>
-                         {/* Two Big Buttons in a Single Row */}
-                        <ActionButtons/>
+
+                        <DataConnectTable/>
+                        
                         {/* Modal Popup Form */}
                         <CModal visible={modal} onClose={() => setModal(false)} backdrop={true}>
                             <CModalHeader onClose={() => setModal(false)}>

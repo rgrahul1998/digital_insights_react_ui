@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
-import { CRow, CCol, CButton } from '@coreui/react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress } from '@mui/material';
 import API_URL from '../../config';
 
-const ActionButtons = () => {
+const DataConnectTable = () => {
     const [data, setData] = useState([]);
-    const [showTable, setShowTable] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const handleConnectDataSource = async () => {
+        setLoading(true);
+        setError(null);
         try {
-            const response = await axios.post(API_URL + '/api/method/frappe.client.get_list', {
+            const response = await axios.post(`${API_URL}/api/method/frappe.client.get_list`, {
                 debug: 0,
                 doctype: "Insights Data Source",
                 fields: ["name", "title", "status", "creation", "modified", "is_site_db", "database_type", "allow_imports"],
@@ -24,64 +26,34 @@ const ActionButtons = () => {
 
             if (response.status === 200) {
                 setData(response.data.message);
-                setShowTable(true);
             } else {
                 console.error('Failed to fetch data:', response.statusText);
+                setError('Failed to fetch data');
             }
         } catch (error) {
             console.error('Error:', error);
+            setError('An error occurred while fetching data');
+        } finally {
+            setLoading(false);
         }
     };
 
+    useEffect(() => {
+        handleConnectDataSource();
+    }, []);
+
     const handleRowClick = (row) => {
-        alert(`You clicked on ${row.title}`);
-        // Navigate to another page or perform another action
+        console.log('Row clicked:', row);
+        // Add logic to handle row click, such as redirecting or displaying more info
     };
 
     return (
         <div>
-            <CRow className="mb-5 d-flex justify-content-center">
-                <CCol md="5" className="mb-3">
-                    <CButton
-                        block
-                        color="primary"
-                        size="lg"
-                        style={{
-                            backgroundColor: '#007bff',
-                            color: '#fff',
-                            borderRadius: '10px',
-                            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                            fontSize: '1.2rem',
-                            padding: '15px 20px',
-                            width: "100%"
-                        }}
-                        onClick={handleConnectDataSource}
-                    >
-                        Connect Data Source
-                    </CButton>
-                </CCol>
-                <CCol md="5" className="mb-3">
-                    <CButton
-                        block
-                        color="success"
-                        size="lg"
-                        style={{
-                            backgroundColor: '#28a745',
-                            color: '#fff',
-                            borderRadius: '10px',
-                            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                            fontSize: '1.2rem',
-                            padding: '15px 20px',
-                            width: "100%"
-                        }}
-                        onClick={() => alert('Create a Query clicked')}
-                    >
-                        Create a Query
-                    </CButton>
-                </CCol>
-            </CRow>
-
-            {showTable && (
+            {loading ? (
+                <CircularProgress />
+            ) : error ? (
+                <Typography color="error">{error}</Typography>
+            ) : (
                 <TableContainer component={Paper} style={{ marginTop: '20px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}>
                     <Table>
                         <TableHead>
@@ -118,4 +90,4 @@ const ActionButtons = () => {
     );
 };
 
-export default ActionButtons;
+export default DataConnectTable;

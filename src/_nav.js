@@ -35,6 +35,12 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Query',
+    to: '/dashboard/query',
+    icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
     name: 'API Connect',
     to: '/dashboard/api-connect',
     icon: <CIcon icon={cilCursor} customClassName="nav-icon" />,

@@ -7,6 +7,7 @@ import './scss/style.scss';
 import DataConnect from './views/data_connect/DataConnect';
 // import DataSourceTable from './views/data_connect/DataSourceTable';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import Query from './views/query/Query';
 
 // Lazy-loaded components
 const NavBar = React.lazy(() => import('./include/navbar'));
@@ -63,6 +64,12 @@ const Main = () => {
           />
           <Route exact path="/contact" element={<ContactUs />} />
           <Route exact path="/request-demo" element={<RequestDemo />} />
+          
+          <Route
+            exact
+            path="/dashboard"
+            element={isAuthenticated ? <DashboardLayout /> : <Navigate to="/login" />}
+          />
           <Route
             exact
             path="/dashboard/data-connect"
@@ -70,8 +77,8 @@ const Main = () => {
           />
           <Route
             exact
-            path="/dashboard"
-            element={isAuthenticated ? <DashboardLayout /> : <Navigate to="/login" />}
+            path="/dashboard/query"
+            element={isAuthenticated ? <Query /> : <Navigate to="/login" />}
           />
           {/* <Route
             exact

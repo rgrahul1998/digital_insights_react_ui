@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import API_URL from '../../config';
 
 const DataConnectTable = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     const handleConnectDataSource = async () => {
         setLoading(true);
@@ -23,7 +25,7 @@ const DataConnectTable = () => {
                 order_by: "creation desc",
                 start: 0
             });
-
+            console.log(response)
             if (response.status === 200) {
                 setData(response.data.message);
             } else {
@@ -43,8 +45,7 @@ const DataConnectTable = () => {
     }, []);
 
     const handleRowClick = (row) => {
-        console.log('Row clicked:', row);
-        // Add logic to handle row click, such as redirecting or displaying more info
+        navigate(`/dashboard/data-connect/${row.title}`);
     };
 
     return (

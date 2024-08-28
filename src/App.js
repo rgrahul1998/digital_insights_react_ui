@@ -8,6 +8,7 @@ import DataConnect from './views/data_connect/DataConnect';
 // import DataSourceTable from './views/data_connect/DataSourceTable';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Query from './views/query/Query';
+import TableList from './views/data_connect/TableList';
 
 // Lazy-loaded components
 const NavBar = React.lazy(() => import('./include/navbar'));
@@ -80,6 +81,8 @@ const Main = () => {
             path="/dashboard/query"
             element={isAuthenticated ? <Query /> : <Navigate to="/login" />}
           />
+          {/* <Route path="/" element={<DataConnectTable />} /> */}
+          <Route path="/dashboard/data-connect/:title" element={<TableList />} />
           {/* <Route
             exact
             path="/database/data-connect/data-source"

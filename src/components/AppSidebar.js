@@ -11,28 +11,40 @@ const AppSidebar = () => {
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
   const [companies, setCompanies] = useState([])
+  const [sidebarComponents, setSidebarComponents] = useState([])
 
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await axios.post(API_URL + '/api/method/digital_insights.digital_insights.api.user_associated_company.user_associated_company', null, {
-          params: {
-            user: localStorage.getItem("user")
-          },
-        });
-        console.log(response)
-        const fetchedCompanies = response?.data?.message?.data || []  // Safe access and fallback to empty array
+        const response = await axios.post(
+          API_URL + '/api/method/digital_insights.digital_insights.api.user_associated_company.user_associated_company',
+          null,
+          {
+            params: {
+              user: localStorage.getItem("user")
+            },
+          }
+        )
+        console.log(111111111111,response)
+        const fetchedCompanies = response?.data?.message?.data?.company_list || []  // Safe access and fallback to empty array
         setCompanies(fetchedCompanies)
+        const fetchedSidebarComponents = response?.data?.message?.data?.sidebar_component_list || []  // Safe access and fallback to empty array
+        setSidebarComponents(fetchedSidebarComponents)
       } catch (error) {
         console.error('Error fetching companies:', error)
         setCompanies([])  // Ensure companies is an empty array on error
+        setSidebarComponents([])
       }
     }
 
     fetchCompanies()
   }, [])
 
-  const navigation = _nav.map((item) => {
+  // Filter the _nav array based on sidebarComponents
+  const filteredNav = _nav.filter((item) => sidebarComponents.includes(item.name))
+
+  // Update navigation with companies if necessary
+  const navigation = filteredNav.map((item) => {
     if (item.name === 'Company' && Array.isArray(companies)) {
       return {
         ...item,
@@ -46,8 +58,8 @@ const AppSidebar = () => {
     return item
   })
 
-  const navigation1 = _nav.filter((item) => item.name !== 'Company')
   const company = navigation.filter((item) => item.name === 'Company')
+  const otherNavigationItems = navigation.filter((item) => item.name !== 'Company')
 
   return (
     <CSidebar
@@ -63,7 +75,7 @@ const AppSidebar = () => {
       <CSidebarHeader className="border-bottom">
         {company.length > 0 && <AppSidebarNav items={company} />}
       </CSidebarHeader>
-      <AppSidebarNav items={navigation1} />
+      <AppSidebarNav items={otherNavigationItems} />
     </CSidebar>
   )
 }

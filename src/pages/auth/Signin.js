@@ -12,7 +12,7 @@ import Container from "@mui/material/Container"
 import Divider from "@mui/material/Divider"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 import API_URL from "../../config"
-import Logo from "../assets/brand/adlogo.png"
+import Logo from "../../assets/brand/adlogo.png"
 import GoogleSignIn from "./GoogleLogin"
 
 const defaultTheme = createTheme()

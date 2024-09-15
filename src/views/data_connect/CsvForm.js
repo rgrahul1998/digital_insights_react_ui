@@ -1,5 +1,5 @@
-import React from "react";
-import { CForm, CFormLabel, CFormInput, CFormSelect, CButton } from "@coreui/react";
+import React from "react"
+import { CForm, CFormLabel, CFormInput, CFormSelect, CButton } from "@coreui/react"
 
 const CsvForm = () => {
     return (
@@ -13,7 +13,7 @@ const CsvForm = () => {
                 <div className="form-group mb-3">
                     <CFormLabel htmlFor="domain">Select Domain</CFormLabel>
                     <CFormSelect id="domain" name="domain">
-                        <option value="finance"></option>
+                        <option value=""></option>
                         <option value="finance">Finance</option>
                         <option value="investing">Investing</option>
                         <option value="stock-market">Stock Market</option>
@@ -26,7 +26,7 @@ const CsvForm = () => {
                 </div>
             </CForm>
         </div>
-    );
+    )
 }
 
-export default CsvForm;
+export default CsvForm

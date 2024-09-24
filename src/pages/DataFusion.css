@@ -1,0 +1,26 @@
+
+.feature-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.how-to-use {
+    padding: 60px 10%;
+}
+.how-to-use h2 {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.how-to-use-content {
+    display: flex;
+    align-items: center;
+}
+.footer {
+    background-color: #0e2439;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+}

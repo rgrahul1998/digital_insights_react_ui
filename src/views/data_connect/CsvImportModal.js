@@ -66,7 +66,6 @@ const CSVImportModal = ({
             data_source: dataSource,
         }
 
-
         // Set loading state
         setIsLoading(true)
 
@@ -112,10 +111,8 @@ const CSVImportModal = ({
                     ) : importSuccess ? (
                         // Success message after successful import
                         <div className="text-center">
-                            <p className="text-success">
-                                The file "{filename}" has been successfully imported!
-                            </p>
-                            <CButton color="success" onClick={handleCreateDashboard}>
+                            <p className="text-success">The file has been successfully imported!</p>
+                            <CButton color="primary" onClick={handleCreateDashboard}>
                                 Create Dashboard
                             </CButton>
                         </div>

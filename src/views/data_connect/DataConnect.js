@@ -1,22 +1,25 @@
 import React, { useEffect, useState, useCallback } from "react"
-import { CContainer, CRow, CCol, CAlert } from "@coreui/react"
+import { CContainer, CRow, CCol, CAlert, CModal, CModalBody, CButton } from "@coreui/react"
 import CardItem from "./CardItem"
 import { cilSpreadsheet, cilNoteAdd, cilDataTransferDown } from "@coreui/icons"
 import { AppHeader, AppSidebar } from "../../components"
 import { DataSourceListApi } from "../../api/DataSourceListApi"
-import JsonForm from "./JsonForm"
 import DatabaseForm from "./DatabaseForm"
 import axios from "axios"
 import API_URL from "../../config"
 import Papa from "papaparse"
 import CsvPreviewModal from "./CsvPreviewModal"
 import BannerCard from "./BannerCard"
-import CSVImportModal from "./CsvImpoerModal"
+import ExternalApiModal from "./ExternalApiModal" // Import existing modal
+import CSVImportModal from "./CsvImportModal"
+import SubscriptionModal from "./SubscriptionModal"
 
 const DataConnect = () => {
     const [dataSources, setDataSources] = useState([])
     const [selectedForm, setSelectedForm] = useState("")
     const [showCSVModal, setShowCSVModal] = useState(false)
+    const [showExternalApiModal, setShowExternalApiModal] = useState(false)
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false) // Upgrade modal state
     const [file, setFile] = useState(null)
     const [fileName, setFileName] = useState(null)
     const [uploadStatus, setUploadStatus] = useState(null)
@@ -25,8 +28,8 @@ const DataConnect = () => {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [columns, setColumns] = useState([])
-    const [showPreviewModal, setShowPreviewModal] = useState(false) // State for preview modal
-    const [csvData, setCsvData] = useState([]) // State to store parsed CSV data
+    const [showPreviewModal, setShowPreviewModal] = useState(false)
+    const [csvData, setCsvData] = useState([])
 
     useEffect(() => {
         const fetchDataSources = async () => {
@@ -45,6 +48,15 @@ const DataConnect = () => {
     const handleCardClick = (formType) => {
         setSelectedForm(formType)
         if (formType === "CSV") setShowCSVModal(true)
+        if (formType === "JSON") {
+            const subscription = localStorage.getItem("subscription")
+            if (subscription === "Free") {
+                // Show upgrade modal if subscription is free
+                setShowUpgradeModal(true)
+            } else {
+                setShowExternalApiModal(true) // Trigger External API modal for non-free users
+            }
+        }
     }
 
     const resetModalState = () => {
@@ -53,8 +65,10 @@ const DataConnect = () => {
         setTableDetails({ label: "", name: "" })
         setShowCSVModal(false)
         setColumns([])
-        setCsvData([]) // Reset CSV data
-        setShowPreviewModal(false) // Close preview modal
+        setCsvData([])
+        setShowPreviewModal(false)
+        setShowExternalApiModal(false)
+        setShowUpgradeModal(false) // Close Upgrade modal
     }
 
     const handleFileChange = (e) => {
@@ -73,7 +87,6 @@ const DataConnect = () => {
         formData.append("file", file)
         formData.append("is_private", 0)
         formData.append("folder", "Home")
-        console.log(localStorage.getItem("access_token"))
         try {
             const response = await axios.post(`${API_URL}/api/method/upload_file`, formData, {
                 headers: {
@@ -130,7 +143,7 @@ const DataConnect = () => {
             <div className="wrapper d-flex flex-column min-vh-100">
                 <AppHeader />
                 <div className="body flex-grow-1">
-                    <CContainer className="px-4">
+                    <CContainer className="mt-4 px-4">
                         <BannerCard />
                         <div className="text-center mb-5">
                             <h3 className="font-weight-bold">
@@ -170,7 +183,6 @@ const DataConnect = () => {
                         {loading && <CAlert color="info">Loading data sources...</CAlert>}
                         {error && <CAlert color="danger">Error: {error}</CAlert>}
 
-                        {selectedForm === "JSON" && <JsonForm />}
                         {selectedForm === "MariaDB" && <DatabaseForm />}
 
                         <CSVImportModal
@@ -186,13 +198,20 @@ const DataConnect = () => {
                             isUploading={isUploading}
                             columns={columns}
                             filename={fileName}
-                            onPreview={() => setShowPreviewModal(true)} // Add handler for preview
+                            onPreview={() => setShowPreviewModal(true)}
                         />
                         <CsvPreviewModal
                             visible={showPreviewModal}
                             onClose={() => setShowPreviewModal(false)}
                             csvData={csvData}
                         />
+                        {/* External API Modal */}
+                        <ExternalApiModal
+                            visible={showExternalApiModal}
+                            onClose={resetModalState}
+                        />
+                        {/* Upgrade Modal */}
+                        <SubscriptionModal visible={showUpgradeModal} onClose={resetModalState} />
                     </CContainer>
                 </div>
             </div>

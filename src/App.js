@@ -7,9 +7,10 @@ import "./scss/style.scss"
 import DataConnect from "./views/data_connect/DataConnect"
 // import DataSourceTable from './views/data_connect/DataSourceTable';
 import { GoogleOAuthProvider } from "@react-oauth/google"
+import DataFusion from "./pages/DataFusion"
 
 // Lazy-loaded components
-const NavBar = React.lazy(() => import("./include/navbar"))
+const NavBar = React.lazy(() => import("./include/Navbar"))
 const Footer = React.lazy(() => import("./include/Footer"))
 const Signin = React.lazy(() => import("./pages/auth/Signin"))
 const Signup = React.lazy(() => import("./pages/auth/Signup"))
@@ -62,6 +63,8 @@ const Main = () => {
                     <Route exact path="/home" element={<LandingPage />} />
                     <Route exact path="/login" element={<Signin />} />
                     <Route exact path="/signup" element={<Signup />} />
+                    <Route exact path="/products/datafusion" element={<DataFusion />} />
+                    {/* <Route exact path="/signup" element={<Signup />} /> */}
                     <Route
                         exact
                         path="/onboarding"
@@ -75,26 +78,26 @@ const Main = () => {
                         path="/dashboard"
                         element={isAuthenticated ? <DashboardLayout /> : <Navigate to="/login" />}
                     />
-                    {/* <Route
+                    <Route
                         exact
                         path="/dashboard/data-connect"
                         element={isAuthenticated ? <DataConnect /> : <Navigate to="/login" />}
-                    /> */}
-                    <Route
+                    />
+                    {/* <Route
                         path="/dashboard/data-connect"
                         element={
                             <ProtectedRoute requiredSubscription="Pro">
                                 <DataConnect />
                             </ProtectedRoute>
                         }
-                    />
+                    /> */}
                     <Route
                         exact
                         path="/dashboard/query"
                         element={isAuthenticated ? <Query /> : <Navigate to="/login" />}
                     />
-                    <Route path="/dashboard/data-connect/:title" element={<TableList />} />
-                    <Route path="/dashboard/query/:queryName" element={<QueryPage />} />
+                    {/* <Route path="/dashboard/data-connect/:title" element={<TableList />} />
+                    <Route path="/dashboard/query/:queryName" element={<QueryPage />} /> */}
                     <Route
                         path="/dashboard/visual-query/:queryName"
                         element={<VisualQueryPage />}

@@ -1,420 +1,302 @@
-// src/views/Query.jsx
-
-import React, { useState } from "react"
-import { CButton } from "@coreui/react"
-import NewQueryModal from "../query/NewQueryModal"
-// import QueryList from "./QueryList"
-// import NewQueryModal from "./NewQueryModal" // Import the modal component
+// Dashboard.js
+import React, { useEffect, useState } from "react"
+import {
+    CContainer,
+    CRow,
+    CCol,
+    CFormInput,
+    CButton,
+    CCard,
+    CCardHeader,
+    CCardBody,
+    CDropdown,
+    CDropdownMenu,
+    CDropdownItem,
+    CDropdownToggle,
+} from "@coreui/react"
+import DashboardHeader from "./DashboardHeader"
+import { DataSourceListApi } from "../../api/DataSourceListApi"
+import { fetchTables } from "../../api/VisualQueryApi"
+import { useParams } from "react-router-dom"
+import TreeView from "./TreeView"
+import {
+    FaDollarSign,
+    FaChartLine,
+    FaChartPie,
+    FaTable,
+    FaFilter,
+    FaTextHeight,
+} from "react-icons/fa" // Import specific icons
+import { AiOutlineLineChart, AiOutlineBarChart } from "react-icons/ai"
+import { IoIosStats } from "react-icons/io"
+import { RiPieChart2Line, RiFileChartLine } from "react-icons/ri"
 
 const Dashboard = () => {
-    const [visible, setVisible] = useState(false)
+    // State hooks
+    const [dataSources, setDataSources] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
+    const [selectedDataSource, setSelectedDataSource] = useState("Select data source")
+    const [selectedDataSourceType, setSelectedDataSourceType] = useState()
+    const [tables, setTables] = useState([])
+    const [selectedTables, setSelectedTables] = useState([]) // To store selected tables
+    const [selectedColumns, setSelectedColumns] = useState([]) // State for selected columns
+    const [searchQuery, setSearchQuery] = useState("")
+    const [tableSearchQuery, setTableSearchQuery] = useState("")
 
-    const handleButtonClick = () => {
-        setVisible(true)
+    useEffect(() => {
+        const getData = async () => {
+            try {
+                const result = await DataSourceListApi()
+                setDataSources(result)
+            } catch (error) {
+                setError(error.message)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        getData()
+    }, [])
+
+    useEffect(() => {
+        if (selectedDataSource !== "Select data source") {
+            const fetchTablesHandler = async () => {
+                try {
+                    const result = await fetchTables(selectedDataSource)
+                    const transformedTables = result.map((table) => ({
+                        id: table.name,
+                        label: table.label,
+                    }))
+
+                    setTables(transformedTables)
+                } catch (error) {
+                    console.error("Error fetching tables:", error)
+                }
+            }
+
+            fetchTablesHandler()
+        }
+    }, [selectedDataSource])
+
+    const handleDataSourceSelect = (dataSourceName, dataSourceType) => {
+        setSelectedDataSource(dataSourceName)
+        setSelectedDataSourceType(dataSourceType)
     }
 
-    const closeModal = () => {
-        setVisible(false)
+    const handleTableSelect = (tableName) => {
+        setSelectedTables((prev) => [...prev, tableName])
     }
+
+    const handleColumnRemove = (column) => {
+        setSelectedColumns((prev) => prev.filter((col) => col !== column))
+    }
+
+    const filteredTables = tables.filter((table) =>
+        table.label.toLowerCase().includes(tableSearchQuery.toLowerCase()),
+    )
+
+    const icons = [
+        { label: "Number", icon: <FaDollarSign /> },
+        { label: "Trend", icon: <AiOutlineLineChart /> },
+        { label: "Line", icon: <IoIosStats /> },
+        { label: "Scatter", icon: <AiOutlineBarChart /> },
+        { label: "Bar", icon: <FaChartLine /> },
+        { label: "Row", icon: <RiFileChartLine /> },
+        { label: "Pie", icon: <FaChartPie /> },
+        { label: "Funnel", icon: <RiPieChart2Line /> },
+        { label: "Table", icon: <FaTable /> },
+        { label: "Progress", icon: <AiOutlineBarChart /> },
+        { label: "Mixed Axis", icon: <FaChartLine /> },
+        { label: "Filter", icon: <FaFilter /> },
+        { label: "Text", icon: <FaTextHeight /> },
+        { label: "Pivot Table", icon: <FaTable /> },
+    ]
 
     return (
-        <div>
-            <div className="d-flex justify-content-end">
-                <CButton color="primary" onClick={handleButtonClick}>
-                    Add New Query
-                </CButton>
-            </div>
-            <NewQueryModal visible={visible} onClose={closeModal} />
-        </div>
+        <CContainer fluid>
+            <DashboardHeader />
+            <CRow className="gx-0 min-vh-100">
+                <CCol lg="7" className="d-flex flex-column">
+                    <div
+                        className="d-flex flex-column align-items-center justify-content-center flex-grow-1"
+                        style={{ border: "1px dashed #ddd" }}
+                    >
+                        <img src="https://via.placeholder.com/100x50" alt="drag and drop icon" />
+                        <h4 className="mb-2">Build visuals with your data</h4>
+                        <p>Select or drag fields from the Data pane onto the report canvas.</p>
+                    </div>
+                </CCol>
+
+                <CCol lg="5" className="d-flex flex-column">
+                    <CRow className="gx-0 flex-grow-1">
+                        <CCol md="4">
+                            <CCard className="h-100 mb-0">
+                                <CCardHeader>Filters</CCardHeader>
+                                <CCardBody>
+                                    <CFormInput
+                                        placeholder="Search"
+                                        className="mb-2"
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                    <p className="mb-2">Filters on this page</p>
+                                    <CButton
+                                        color="secondary"
+                                        variant="outline"
+                                        className="w-100 mb-2"
+                                    >
+                                        Add data fields here
+                                    </CButton>
+                                    <hr className="mb-2" />
+                                    <p className="mb-2">Filters on all pages</p>
+                                    <CButton color="secondary" variant="outline" className="w-100">
+                                        Add data fields here
+                                    </CButton>
+                                </CCardBody>
+                            </CCard>
+                        </CCol>
+
+                        <CCol md="4">
+                            <CCard className="h-100 mb-0">
+                                <CCardHeader>Visualizations</CCardHeader>
+                                <CCardBody className="p-0">
+                                    <div className="d-flex flex-wrap">
+                                        {icons.map((item, index) => (
+                                            <div
+                                                key={index}
+                                                style={{
+                                                    width: "25%", // Controls number of icons per row
+                                                    textAlign: "center",
+                                                }}
+                                            >
+                                                <div style={{ fontSize: "1.2rem", color: "#333" }}>
+                                                    {item.icon}
+                                                </div>
+                                                {/* Icon size and color */}
+                                                <div
+                                                    style={{
+                                                        fontSize: "0.74rem",
+                                                        color: "#555",
+                                                        marginTop: "0.1rem",
+                                                    }}
+                                                >
+                                                    {item.label}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <hr className="mb-2" />
+                                    <div className="p-2">
+                                        <p className="mb-3 fw-bold">Selected Columns</p>
+                                        {selectedColumns.length > 0 ? (
+                                            selectedColumns.map((column, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="d-flex align-items-center mb-2"
+                                                    style={{
+                                                        width: "100%",
+                                                        padding: "0.5rem",
+                                                        border: "1px solid #e5e5e5",
+                                                        borderRadius: "0.2rem",
+                                                        backgroundColor: "#f9f9f9",
+                                                    }}
+                                                >
+                                                    <span
+                                                        style={{
+                                                            flexGrow: 1,
+                                                            whiteSpace: "nowrap",
+                                                            overflow: "hidden",
+                                                            textOverflow: "ellipsis",
+                                                            fontSize: "0.9rem",
+                                                        }}
+                                                        title={column} // Tooltip with full column name
+                                                    >
+                                                        {column}
+                                                    </span>
+                                                    <button
+                                                        style={{
+                                                            fontSize: "0.75rem",
+                                                            width: "1.25rem",
+                                                            height: "1.25rem",
+                                                            lineHeight: "1.25rem",
+                                                            border: "none",
+                                                            background: "none",
+                                                            color: "#dc3545",
+                                                            cursor: "pointer",
+                                                        }}
+                                                        onClick={() => handleColumnRemove(column)}
+                                                        aria-label="Remove column"
+                                                    >
+                                                        &#x2715;
+                                                    </button>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-muted">No columns selected</p>
+                                        )}
+                                    </div>
+                                    <hr className="mb-0" />
+                                </CCardBody>
+                            </CCard>
+                        </CCol>
+
+                        <CCol md="4">
+                            <CCard className="h-100 mb-0">
+                                <CCardHeader>Data</CCardHeader>
+                                <CCardBody className="p-0">
+                                    <CDropdown className="w-100">
+                                        <CDropdownToggle color="white" className="w-100">
+                                            {selectedDataSource}
+                                        </CDropdownToggle>
+                                        <CDropdownMenu
+                                            style={{ maxHeight: "300px", overflowY: "auto" }}
+                                        >
+                                            {dataSources.map((source) => (
+                                                <CDropdownItem
+                                                    key={source.name}
+                                                    onClick={() =>
+                                                        handleDataSourceSelect(
+                                                            source.name,
+                                                            source.database_type,
+                                                        )
+                                                    }
+                                                >
+                                                    {source.title}
+                                                </CDropdownItem>
+                                            ))}
+                                        </CDropdownMenu>
+                                    </CDropdown>
+
+                                    {selectedDataSource !== "Select data source" && (
+                                        <>
+                                            <CFormInput
+                                                placeholder="Search tables"
+                                                className="mb-2"
+                                                value={tableSearchQuery}
+                                                onChange={(e) =>
+                                                    setTableSearchQuery(e.target.value)
+                                                }
+                                            />
+                                            <div style={{ height: "700px", overflowY: "auto" }}>
+                                                <TreeView
+                                                    items={filteredTables}
+                                                    onSelect={handleTableSelect}
+                                                    selectedDataSource={selectedDataSource}
+                                                    selectedDataSourceType={selectedDataSourceType}
+                                                    selectedColumns={selectedColumns} // Pass selectedColumns
+                                                    setSelectedColumns={setSelectedColumns} // Pass setSelectedColumns
+                                                />
+                                            </div>
+                                        </>
+                                    )}
+                                </CCardBody>
+                            </CCard>
+                        </CCol>
+                    </CRow>
+                </CCol>
+            </CRow>
+        </CContainer>
     )
 }
 
 export default Dashboard
-
-// import React from 'react'
-// import classNames from 'classnames'
-
-// import {
-//   CAvatar,
-//   CButton,
-//   CButtonGroup,
-//   CCard,
-//   CCardBody,
-//   CCardFooter,
-//   CCardHeader,
-//   CCol,
-//   CProgress,
-//   CRow,
-//   CTable,
-//   CTableBody,
-//   CTableDataCell,
-//   CTableHead,
-//   CTableHeaderCell,
-//   CTableRow,
-// } from '@coreui/react'
-// import CIcon from '@coreui/icons-react'
-// import {
-//   cibCcAmex,
-//   cibCcApplePay,
-//   cibCcMastercard,
-//   cibCcPaypal,
-//   cibCcStripe,
-//   cibCcVisa,
-//   cibGoogle,
-//   cibFacebook,
-//   cibLinkedin,
-//   cifBr,
-//   cifEs,
-//   cifFr,
-//   cifIn,
-//   cifPl,
-//   cifUs,
-//   cibTwitter,
-//   cilCloudDownload,
-//   cilPeople,
-//   cilUser,
-//   cilUserFemale,
-// } from '@coreui/icons'
-
-// import avatar1 from 'src/assets/images/avatars/1.jpg'
-// import avatar2 from 'src/assets/images/avatars/2.jpg'
-// import avatar3 from 'src/assets/images/avatars/3.jpg'
-// import avatar4 from 'src/assets/images/avatars/4.jpg'
-// import avatar5 from 'src/assets/images/avatars/5.jpg'
-// import avatar6 from 'src/assets/images/avatars/6.jpg'
-
-// import WidgetsBrand from '../widgets/WidgetsBrand'
-// import WidgetsDropdown from '../widgets/WidgetsDropdown'
-// import MainChart from './MainChart'
-
-// const Dashboard = () => {
-//   const progressExample = [
-//     { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
-//     { title: 'Unique', value: '24.093 Users', percent: 20, color: 'info' },
-//     { title: 'Pageviews', value: '78.706 Views', percent: 60, color: 'warning' },
-//     { title: 'New Users', value: '22.123 Users', percent: 80, color: 'danger' },
-//     { title: 'Bounce Rate', value: 'Average Rate', percent: 40.15, color: 'primary' },
-//   ]
-
-//   const progressGroupExample1 = [
-//     { title: 'Monday', value1: 34, value2: 78 },
-//     { title: 'Tuesday', value1: 56, value2: 94 },
-//     { title: 'Wednesday', value1: 12, value2: 67 },
-//     { title: 'Thursday', value1: 43, value2: 91 },
-//     { title: 'Friday', value1: 22, value2: 73 },
-//     { title: 'Saturday', value1: 53, value2: 82 },
-//     { title: 'Sunday', value1: 9, value2: 69 },
-//   ]
-
-//   const progressGroupExample2 = [
-//     { title: 'Male', icon: cilUser, value: 53 },
-//     { title: 'Female', icon: cilUserFemale, value: 43 },
-//   ]
-
-//   const progressGroupExample3 = [
-//     { title: 'Organic Search', icon: cibGoogle, percent: 56, value: '191,235' },
-//     { title: 'Facebook', icon: cibFacebook, percent: 15, value: '51,223' },
-//     { title: 'Twitter', icon: cibTwitter, percent: 11, value: '37,564' },
-//     { title: 'LinkedIn', icon: cibLinkedin, percent: 8, value: '27,319' },
-//   ]
-
-//   const tableExample = [
-//     {
-//       avatar: { src: avatar1, status: 'success' },
-//       user: {
-//         name: 'Yiorgos Avraamu',
-//         new: true,
-//         registered: 'Jan 1, 2023',
-//       },
-//       country: { name: 'USA', flag: cifUs },
-//       usage: {
-//         value: 50,
-//         period: 'Jun 11, 2023 - Jul 10, 2023',
-//         color: 'success',
-//       },
-//       payment: { name: 'Mastercard', icon: cibCcMastercard },
-//       activity: '10 sec ago',
-//     },
-//     {
-//       avatar: { src: avatar2, status: 'danger' },
-//       user: {
-//         name: 'Avram Tarasios',
-//         new: false,
-//         registered: 'Jan 1, 2023',
-//       },
-//       country: { name: 'Brazil', flag: cifBr },
-//       usage: {
-//         value: 22,
-//         period: 'Jun 11, 2023 - Jul 10, 2023',
-//         color: 'info',
-//       },
-//       payment: { name: 'Visa', icon: cibCcVisa },
-//       activity: '5 minutes ago',
-//     },
-//     {
-//       avatar: { src: avatar3, status: 'warning' },
-//       user: { name: 'Quintin Ed', new: true, registered: 'Jan 1, 2023' },
-//       country: { name: 'India', flag: cifIn },
-//       usage: {
-//         value: 74,
-//         period: 'Jun 11, 2023 - Jul 10, 2023',
-//         color: 'warning',
-//       },
-//       payment: { name: 'Stripe', icon: cibCcStripe },
-//       activity: '1 hour ago',
-//     },
-//     {
-//       avatar: { src: avatar4, status: 'secondary' },
-//       user: { name: 'Enéas Kwadwo', new: true, registered: 'Jan 1, 2023' },
-//       country: { name: 'France', flag: cifFr },
-//       usage: {
-//         value: 98,
-//         period: 'Jun 11, 2023 - Jul 10, 2023',
-//         color: 'danger',
-//       },
-//       payment: { name: 'PayPal', icon: cibCcPaypal },
-//       activity: 'Last month',
-//     },
-//     {
-//       avatar: { src: avatar5, status: 'success' },
-//       user: {
-//         name: 'Agapetus Tadeáš',
-//         new: true,
-//         registered: 'Jan 1, 2023',
-//       },
-//       country: { name: 'Spain', flag: cifEs },
-//       usage: {
-//         value: 22,
-//         period: 'Jun 11, 2023 - Jul 10, 2023',
-//         color: 'primary',
-//       },
-//       payment: { name: 'Google Wallet', icon: cibCcApplePay },
-//       activity: 'Last week',
-//     },
-//     {
-//       avatar: { src: avatar6, status: 'danger' },
-//       user: {
-//         name: 'Friderik Dávid',
-//         new: true,
-//         registered: 'Jan 1, 2023',
-//       },
-//       country: { name: 'Poland', flag: cifPl },
-//       usage: {
-//         value: 43,
-//         period: 'Jun 11, 2023 - Jul 10, 2023',
-//         color: 'success',
-//       },
-//       payment: { name: 'Amex', icon: cibCcAmex },
-//       activity: 'Last week',
-//     },
-//   ]
-
-//   return (
-//     <>
-//       <WidgetsDropdown className="mb-4" />
-//       <CCard className="mb-4">
-//         <CCardBody>
-//           <CRow>
-//             <CCol sm={5}>
-//               <h4 id="traffic" className="card-title mb-0">
-//                 Traffic
-//               </h4>
-//               <div className="small text-body-secondary">January - July 2023</div>
-//             </CCol>
-//             <CCol sm={7} className="d-none d-md-block">
-//               <CButton color="primary" className="float-end">
-//                 <CIcon icon={cilCloudDownload} />
-//               </CButton>
-//               <CButtonGroup className="float-end me-3">
-//                 {['Day', 'Month', 'Year'].map((value) => (
-//                   <CButton
-//                     color="outline-secondary"
-//                     key={value}
-//                     className="mx-0"
-//                     active={value === 'Month'}
-//                   >
-//                     {value}
-//                   </CButton>
-//                 ))}
-//               </CButtonGroup>
-//             </CCol>
-//           </CRow>
-//           <MainChart />
-//         </CCardBody>
-//         <CCardFooter>
-//           <CRow
-//             xs={{ cols: 1, gutter: 4 }}
-//             sm={{ cols: 2 }}
-//             lg={{ cols: 4 }}
-//             xl={{ cols: 5 }}
-//             className="mb-2 text-center"
-//           >
-//             {progressExample.map((item, index, items) => (
-//               <CCol
-//                 className={classNames({
-//                   'd-none d-xl-block': index + 1 === items.length,
-//                 })}
-//                 key={index}
-//               >
-//                 <div className="text-body-secondary">{item.title}</div>
-//                 <div className="fw-semibold text-truncate">
-//                   {item.value} ({item.percent}%)
-//                 </div>
-//                 <CProgress thin className="mt-2" color={item.color} value={item.percent} />
-//               </CCol>
-//             ))}
-//           </CRow>
-//         </CCardFooter>
-//       </CCard>
-//       <WidgetsBrand className="mb-4" withCharts />
-//       <CRow>
-//         <CCol xs>
-//           <CCard className="mb-4">
-//             <CCardHeader>Traffic {' & '} Sales</CCardHeader>
-//             <CCardBody>
-//               <CRow>
-//                 <CCol xs={12} md={6} xl={6}>
-//                   <CRow>
-//                     <CCol xs={6}>
-//                       <div className="border-start border-start-4 border-start-info py-1 px-3">
-//                         <div className="text-body-secondary text-truncate small">New Clients</div>
-//                         <div className="fs-5 fw-semibold">9,123</div>
-//                       </div>
-//                     </CCol>
-//                     <CCol xs={6}>
-//                       <div className="border-start border-start-4 border-start-danger py-1 px-3 mb-3">
-//                         <div className="text-body-secondary text-truncate small">
-//                           Recurring Clients
-//                         </div>
-//                         <div className="fs-5 fw-semibold">22,643</div>
-//                       </div>
-//                     </CCol>
-//                   </CRow>
-//                   <hr className="mt-0" />
-//                   {progressGroupExample1.map((item, index) => (
-//                     <div className="progress-group mb-4" key={index}>
-//                       <div className="progress-group-prepend">
-//                         <span className="text-body-secondary small">{item.title}</span>
-//                       </div>
-//                       <div className="progress-group-bars">
-//                         <CProgress thin color="info" value={item.value1} />
-//                         <CProgress thin color="danger" value={item.value2} />
-//                       </div>
-//                     </div>
-//                   ))}
-//                 </CCol>
-//                 <CCol xs={12} md={6} xl={6}>
-//                   <CRow>
-//                     <CCol xs={6}>
-//                       <div className="border-start border-start-4 border-start-warning py-1 px-3 mb-3">
-//                         <div className="text-body-secondary text-truncate small">Pageviews</div>
-//                         <div className="fs-5 fw-semibold">78,623</div>
-//                       </div>
-//                     </CCol>
-//                     <CCol xs={6}>
-//                       <div className="border-start border-start-4 border-start-success py-1 px-3 mb-3">
-//                         <div className="text-body-secondary text-truncate small">Organic</div>
-//                         <div className="fs-5 fw-semibold">49,123</div>
-//                       </div>
-//                     </CCol>
-//                   </CRow>
-
-//                   <hr className="mt-0" />
-
-//                   {progressGroupExample2.map((item, index) => (
-//                     <div className="progress-group mb-4" key={index}>
-//                       <div className="progress-group-header">
-//                         <CIcon className="me-2" icon={item.icon} size="lg" />
-//                         <span>{item.title}</span>
-//                         <span className="ms-auto fw-semibold">{item.value}%</span>
-//                       </div>
-//                       <div className="progress-group-bars">
-//                         <CProgress thin color="warning" value={item.value} />
-//                       </div>
-//                     </div>
-//                   ))}
-
-//                   <div className="mb-5"></div>
-
-//                   {progressGroupExample3.map((item, index) => (
-//                     <div className="progress-group" key={index}>
-//                       <div className="progress-group-header">
-//                         <CIcon className="me-2" icon={item.icon} size="lg" />
-//                         <span>{item.title}</span>
-//                         <span className="ms-auto fw-semibold">
-//                           {item.value}{' '}
-//                           <span className="text-body-secondary small">({item.percent}%)</span>
-//                         </span>
-//                       </div>
-//                       <div className="progress-group-bars">
-//                         <CProgress thin color="success" value={item.percent} />
-//                       </div>
-//                     </div>
-//                   ))}
-//                 </CCol>
-//               </CRow>
-
-//               <br />
-
-//               <CTable align="middle" className="mb-0 border" hover responsive>
-//                 <CTableHead className="text-nowrap">
-//                   <CTableRow>
-//                     <CTableHeaderCell className="bg-body-tertiary text-center">
-//                       <CIcon icon={cilPeople} />
-//                     </CTableHeaderCell>
-//                     <CTableHeaderCell className="bg-body-tertiary">User</CTableHeaderCell>
-//                     <CTableHeaderCell className="bg-body-tertiary text-center">
-//                       Country
-//                     </CTableHeaderCell>
-//                     <CTableHeaderCell className="bg-body-tertiary">Usage</CTableHeaderCell>
-//                     <CTableHeaderCell className="bg-body-tertiary text-center">
-//                       Payment Method
-//                     </CTableHeaderCell>
-//                     <CTableHeaderCell className="bg-body-tertiary">Activity</CTableHeaderCell>
-//                   </CTableRow>
-//                 </CTableHead>
-//                 <CTableBody>
-//                   {tableExample.map((item, index) => (
-//                     <CTableRow v-for="item in tableItems" key={index}>
-//                       <CTableDataCell className="text-center">
-//                         <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
-//                       </CTableDataCell>
-//                       <CTableDataCell>
-//                         <div>{item.user.name}</div>
-//                         <div className="small text-body-secondary text-nowrap">
-//                           <span>{item.user.new ? 'New' : 'Recurring'}</span> | Registered:{' '}
-//                           {item.user.registered}
-//                         </div>
-//                       </CTableDataCell>
-//                       <CTableDataCell className="text-center">
-//                         <CIcon size="xl" icon={item.country.flag} title={item.country.name} />
-//                       </CTableDataCell>
-//                       <CTableDataCell>
-//                         <div className="d-flex justify-content-between text-nowrap">
-//                           <div className="fw-semibold">{item.usage.value}%</div>
-//                           <div className="ms-3">
-//                             <small className="text-body-secondary">{item.usage.period}</small>
-//                           </div>
-//                         </div>
-//                         <CProgress thin color={item.usage.color} value={item.usage.value} />
-//                       </CTableDataCell>
-//                       <CTableDataCell className="text-center">
-//                         <CIcon size="xl" icon={item.payment.icon} />
-//                       </CTableDataCell>
-//                       <CTableDataCell>
-//                         <div className="small text-body-secondary text-nowrap">Last login</div>
-//                         <div className="fw-semibold text-nowrap">{item.activity}</div>
-//                       </CTableDataCell>
-//                     </CTableRow>
-//                   ))}
-//                 </CTableBody>
-//               </CTable>
-//             </CCardBody>
-//           </CCard>
-//         </CCol>
-//       </CRow>
-//     </>
-//   )
-// }
-
-// export default Dashboard

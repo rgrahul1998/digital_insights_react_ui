@@ -25,6 +25,10 @@ const QueryPage = React.lazy(() => import("./views/query/QueryPage"))
 const VisualQueryPage = React.lazy(() => import("./views/query/VisualQueryPage"))
 const ProtectedRoute = React.lazy(() => import("./pages/ProtectedRoute"))
 const SubscriptionPage = React.lazy(() => import("./views/subscription/SubscriptionPage"))
+const FinsightPro = React.lazy(() => import("./pages/DataFusion"))
+const Crm = React.lazy(() => import("./pages/Crm"))
+const FPAPowerbyML_AI = React.lazy(() => import("./pages/FP&APowerbyML_AI"))
+const MagicExcel = React.lazy(() => import("./pages/MagicExcel"))
 
 // Pages
 const Page404 = React.lazy(() => import("./views/pages/page404/Page404"))
@@ -64,6 +68,10 @@ const Main = () => {
                     <Route exact path="/login" element={<Signin />} />
                     <Route exact path="/signup" element={<Signup />} />
                     <Route exact path="/products/datafusion" element={<DataFusion />} />
+                    <Route exact path="/products/finsightpro" element={<FinsightPro />} />
+                    <Route exact path="/products/crm" element={<Crm />} />
+                    <Route exact path="/products/fp-and-a-ml-ai" element={<FPAPowerbyML_AI />} />
+                    <Route exact path="/products/magic-excel" element={<MagicExcel />} />
                     {/* <Route exact path="/signup" element={<Signup />} /> */}
                     <Route
                         exact

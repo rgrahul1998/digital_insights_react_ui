@@ -22,10 +22,6 @@ const DataFusion = () => {
             color: "#fff",
             fontWeight: "bold",
         },
-        heroDescription: {
-            color: "#fff",
-            lineHeight: 1.9,
-        },
         ctaButton: {
             display: "inline-block",
             maxWidth: "200px",
@@ -93,7 +89,16 @@ const DataFusion = () => {
                     <CRow className="align-items-stretch">
                         <CCol xs={12} md={6} style={styles.textCol}>
                             <h1 style={styles.heroTitle}>Data Fusion</h1>
-                            <h6 style={styles.heroDescription}>
+                            <h6
+                                style={{
+                                    color: "#fff",
+                                    lineHeight: 1.9,
+                                    fontSize: "1.25rem",
+                                    marginTop: "15px",
+                                    maxWidth: "600px",
+                                    margin: "0 auto",
+                                }}
+                            >
                                 Unify your data landscape with our AI-powered Data Fusion solution.
                                 Create a single source of truth by integrating, cleansing, and
                                 harmonizing data from multiple sources, enabling confident

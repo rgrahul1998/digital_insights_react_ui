@@ -17,14 +17,6 @@ const FinsightPro = () => {
             justifyContent: "center",
             paddingRight: "40px",
         },
-        heroTitle: {
-            color: "#fff",
-            fontWeight: "bold",
-        },
-        heroDescription: {
-            color: "#fff",
-            lineHeight: 1.9,
-        },
         ctaButton: {
             display: "inline-block",
             maxWidth: "200px",
@@ -91,8 +83,20 @@ const FinsightPro = () => {
                 <CContainer fluid>
                     <CRow className="align-items-stretch">
                         <CCol xs={12} md={6} style={styles.textCol}>
-                            <h1 style={styles.heroTitle}>Finance Insight Pro</h1>
-                            <h6 style={styles.heroDescription}>
+                            <h1 style={{ color: "#fff", fontWeight: "bold", fontSize: "3rem" }}>
+                                Finance Insight Pro
+                            </h1>
+                            <h6
+                                style={{
+                                    color: "#fff",
+                                    lineHeight: 1.9,
+                                    fontSize: "1.25rem",
+                                    marginTop: "15px",
+                                    maxWidth: "600px",
+                                    margin: "0 auto",
+                                }}
+                            >
+                                {" "}
                                 Revolutionize your financial analysis with AI-driven solutions.
                                 Enhance data interpretation, forecasting, and decision-making while
                                 uncovering insights and optimizing strategies for informed financial

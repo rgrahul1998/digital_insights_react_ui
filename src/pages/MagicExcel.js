@@ -17,10 +17,6 @@ const MagicExcel = () => {
             justifyContent: "center",
             paddingRight: "40px",
         },
-        heroTitle: {
-            color: "#fff",
-            fontWeight: "bold",
-        },
         heroDescription: {
             color: "#fff",
             lineHeight: 1.9,
@@ -91,8 +87,19 @@ const MagicExcel = () => {
                 <CContainer fluid>
                     <CRow className="align-items-stretch">
                         <CCol xs={12} md={6} style={styles.textCol}>
-                            <h1 style={styles.heroTitle}>FP&A Excel Enhancement</h1>
-                            <h6 style={styles.heroDescription}>
+                            <h1 style={{ color: "#fff", fontWeight: "bold", fontSize: "3rem" }}>
+                                FP&A Excel Enhancement
+                            </h1>
+                            <h6
+                                style={{
+                                    color: "#fff",
+                                    lineHeight: 1.9,
+                                    fontSize: "1.25rem",
+                                    marginTop: "15px",
+                                    maxWidth: "600px",
+                                    margin: "0 auto",
+                                }}
+                            >
                                 Supercharge your Excel spreadsheets for Financial Planning &
                                 Analysis. Keep working in the familiar Excel environment while
                                 automating time-consuming manual processes with the power of the

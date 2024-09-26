@@ -106,7 +106,8 @@ const Dashboard = () => {
 
         try {
             const response = await fetch(
-                API+"/api/method/digital_insights.digital_insights.api.get_table_data.get_table_data",
+                API_URL +
+                    "/api/method/digital_insights.digital_insights.api.get_table_data.get_table_data",
                 {
                     method: "POST",
                     headers: {
@@ -138,7 +139,7 @@ const Dashboard = () => {
 
         try {
             const response = await fetch(
-                API_URL+"/api/method/insights.api.queries.create_query",
+                API_URL + "/api/method/insights.api.queries.create_query",
                 {
                     method: "POST",
                     headers: {

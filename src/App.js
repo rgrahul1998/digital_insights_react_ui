@@ -8,6 +8,9 @@ import DataConnect from "./views/data_connect/DataConnect"
 // import DataSourceTable from './views/data_connect/DataSourceTable';
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import DataFusion from "./pages/DataFusion"
+import Press from "./pages/Press"
+import Pricing from "./pages/Pricing"
+import OurTeam from "./pages/OurTeam"
 
 // Lazy-loaded components
 const NavBar = React.lazy(() => import("./include/navbar"))
@@ -67,11 +70,16 @@ const Main = () => {
                     <Route exact path="/home" element={<LandingPage />} />
                     <Route exact path="/login" element={<Signin />} />
                     <Route exact path="/signup" element={<Signup />} />
+
                     <Route exact path="/products/datafusion" element={<DataFusion />} />
                     <Route exact path="/products/finsightpro" element={<FinsightPro />} />
                     <Route exact path="/products/crm" element={<Crm />} />
                     <Route exact path="/products/fp-and-a-ml-ai" element={<FPAPowerbyML_AI />} />
                     <Route exact path="/products/magic-excel" element={<MagicExcel />} />
+
+                    <Route exact path="/about-us/press" element={<Press />} />
+                    <Route exact path="/pricing" element={<Pricing />} />
+                    <Route exact path="/about-us/team" element={<OurTeam />} />
                     {/* <Route exact path="/signup" element={<Signup />} /> */}
                     <Route
                         exact

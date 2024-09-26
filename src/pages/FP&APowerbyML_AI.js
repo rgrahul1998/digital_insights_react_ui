@@ -17,10 +17,6 @@ const FPAPowerbyML_AI = () => {
             justifyContent: "center",
             paddingRight: "40px",
         },
-        heroTitle: {
-            color: "#fff",
-            fontWeight: "bold",
-        },
         heroDescription: {
             color: "#fff",
             lineHeight: 1.9,
@@ -91,8 +87,20 @@ const FPAPowerbyML_AI = () => {
                 <CContainer fluid>
                     <CRow className="align-items-stretch">
                         <CCol xs={12} md={6} style={styles.textCol}>
-                            <h1 style={styles.heroTitle}>Finance Power by AI</h1>
-                            <h6 style={styles.heroDescription}>
+                            <h1 style={{ color: "#fff", fontWeight: "bold", fontSize: "3rem" }}>
+                                Finance Power by AI
+                            </h1>
+                            <h6
+                                style={{
+                                    color: "#fff",
+                                    lineHeight: 1.9,
+                                    fontSize: "1.25rem",
+                                    marginTop: "15px",
+                                    maxWidth: "600px",
+                                    margin: "0 auto",
+                                }}
+                            >
+                                {" "}
                                 Revolutionize your financial processes with AI-driven solutions.
                                 Enhance budgeting, forecasting, and analysis while detecting
                                 anomalies and optimizing scenarios for informed decision-making.

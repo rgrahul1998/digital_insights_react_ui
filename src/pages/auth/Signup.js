@@ -81,11 +81,6 @@ export default function SignUp() {
             return
         }
 
-        var csrf_token = frappe.csrf_token
-        console.log(csrf_token)
-        headers = {
-            "X-Frappe-CSRF-Token": csrf_token,
-        }
         try {
             const response = await axios.post(
                 API_URL +
@@ -99,7 +94,6 @@ export default function SignUp() {
                         mobile_no: contactNo,
                     },
                     withCredentials: true,
-                    headers: headers,
                 },
             )
 

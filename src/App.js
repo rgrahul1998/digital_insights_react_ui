@@ -10,11 +10,11 @@ import { GoogleOAuthProvider } from "@react-oauth/google"
 import DataFusion from "./pages/DataFusion"
 
 // Lazy-loaded components
-const NavBar = React.lazy(() => import("./include/Navbar"))
+const NavBar = React.lazy(() => import("./include/navbar"))
 const Footer = React.lazy(() => import("./include/Footer"))
 const Signin = React.lazy(() => import("./pages/auth/Signin"))
 const Signup = React.lazy(() => import("./pages/auth/Signup"))
-const Onboarding = React.lazy(() => import("./pages/Onboarding"))
+const Onboarding = React.lazy(() => import("./pages/onboarding"))
 const ContactUs = React.lazy(() => import("./pages/contact_us"))
 const RequestDemo = React.lazy(() => import("./pages/request_demo"))
 const LandingPage = React.lazy(() => import("./landing-page/LandingPage"))

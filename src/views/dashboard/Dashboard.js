@@ -17,7 +17,6 @@ import {
 import DashboardHeader from "./DashboardHeader"
 import { DataSourceListApi } from "../../api/DataSourceListApi"
 import { fetchTables } from "../../api/VisualQueryApi"
-import { useParams } from "react-router-dom"
 import TreeView from "./TreeView"
 import {
     FaDollarSign,
@@ -30,6 +29,7 @@ import {
 import { AiOutlineLineChart, AiOutlineBarChart } from "react-icons/ai"
 import { IoIosStats } from "react-icons/io"
 import { RiPieChart2Line, RiFileChartLine } from "react-icons/ri"
+import API_URL from "../../config"
 
 const Dashboard = () => {
     // State hooks
@@ -39,13 +39,14 @@ const Dashboard = () => {
     const [selectedDataSource, setSelectedDataSource] = useState("Select data source")
     const [selectedDataSourceType, setSelectedDataSourceType] = useState()
     const [tables, setTables] = useState([])
-    const [selectedTables, setSelectedTables] = useState([]) // To store selected tables
-    const [selectedColumns, setSelectedColumns] = useState([]) // State for selected columns
+    const [selectedTables, setSelectedTables] = useState([])
+    const [selectedColumns, setSelectedColumns] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
     const [tableSearchQuery, setTableSearchQuery] = useState("")
+    const [showTablePreview, setShowTablePreview] = useState(false) // NEW state for table visibility
 
     useEffect(() => {
-        const getData = async () => {
+        const fetchDataSources = async () => {
             try {
                 const result = await DataSourceListApi()
                 setDataSources(result)
@@ -55,8 +56,7 @@ const Dashboard = () => {
                 setLoading(false)
             }
         }
-
-        getData()
+        fetchDataSources()
     }, [])
 
     useEffect(() => {
@@ -68,13 +68,11 @@ const Dashboard = () => {
                         id: table.name,
                         label: table.label,
                     }))
-
                     setTables(transformedTables)
                 } catch (error) {
                     console.error("Error fetching tables:", error)
                 }
             }
-
             fetchTablesHandler()
         }
     }, [selectedDataSource])
@@ -92,9 +90,75 @@ const Dashboard = () => {
         setSelectedColumns((prev) => prev.filter((col) => col !== column))
     }
 
+    const handleExecute = async () => {
+        // Check if there is a selected data source, table, and columns
+        if (!selectedDataSource || selectedTables.length === 0 || selectedColumns.length === 0) {
+            console.error("Please select a data source, table, and columns.")
+            return
+        }
+
+        // Prepare payload
+        const payload = {
+            data_source: selectedDataSource,
+            table: selectedTables, // Assuming you are selecting one table at a time
+            columns: selectedColumns,
+        }
+
+        try {
+            const response = await fetch(
+                API+"/api/method/digital_insights.digital_insights.api.get_table_data.get_table_data",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                },
+            )
+
+            if (response.ok) {
+                const data = await response.json()
+                console.log("Table data retrieved:", data)
+                // Handle the response data, e.g., display table preview
+                setShowTablePreview(true)
+            } else {
+                console.error("Failed to retrieve table data")
+            }
+        } catch (error) {
+            console.error("An error occurred while fetching table data:", error)
+        }
+    }
+
     const filteredTables = tables.filter((table) =>
         table.label.toLowerCase().includes(tableSearchQuery.toLowerCase()),
     )
+
+    const handleNewQuery = async () => {
+        const payload = { is_assisted_query: 1, title: "ABC" }
+
+        try {
+            const response = await fetch(
+                API_URL+"/api/method/insights.api.queries.create_query",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                },
+            )
+
+            if (response.ok) {
+                const data = await response.json()
+                const queryName = data.message.name
+                console.log("New query created:", queryName)
+            } else {
+                console.error("Failed to create query")
+            }
+        } catch (error) {
+            console.error("An error occurred:", error)
+        }
+    }
 
     const icons = [
         { label: "Number", icon: <FaDollarSign /> },
@@ -118,42 +182,53 @@ const Dashboard = () => {
             <DashboardHeader />
             <CRow className="gx-0 min-vh-100">
                 <CCol lg="7" className="d-flex flex-column">
-                    <div
-                        className="d-flex flex-column align-items-center justify-content-center flex-grow-1"
-                        style={{ border: "1px dashed #ddd" }}
-                    >
-                        <img src="https://via.placeholder.com/100x50" alt="drag and drop icon" />
-                        <h4 className="mb-2">Build visuals with your data</h4>
-                        <p>Select or drag fields from the Data pane onto the report canvas.</p>
-                    </div>
+                    {/* Upper Section: Dashboard Graphs */}
+                    <CCol className="d-flex flex-column mb-4">
+                        <DashboardGraphs />
+                    </CCol>
+
+                    {/* Lower Section: Table Preview */}
+                    <CCol className="d-flex flex-column">
+                        <div
+                            className="d-flex flex-column align-items-center justify-content-center flex-grow-1"
+                            style={{ border: "1px dashed #ddd" }}
+                        >
+                            <h4 className="mb-2">Preview Table</h4>
+                            <CButton color="primary" onClick={handleExecute}>
+                                Execute
+                            </CButton>
+                            {/* Conditionally render table */}
+                            {showTablePreview && (
+                                <table className="table mt-3">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Column 1</th>
+                                            <th scope="col">Column 2</th>
+                                            <th scope="col">Column 3</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">1</th>
+                                            <td>Data 1</td>
+                                            <td>Data 2</td>
+                                            <td>Data 3</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+                    </CCol>
                 </CCol>
 
                 <CCol lg="5" className="d-flex flex-column">
                     <CRow className="gx-0 flex-grow-1">
                         <CCol md="4">
-                            <CCard className="h-100 mb-0">
-                                <CCardHeader>Filters</CCardHeader>
-                                <CCardBody>
-                                    <CFormInput
-                                        placeholder="Search"
-                                        className="mb-2"
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                    />
-                                    <p className="mb-2">Filters on this page</p>
-                                    <CButton
-                                        color="secondary"
-                                        variant="outline"
-                                        className="w-100 mb-2"
-                                    >
-                                        Add data fields here
-                                    </CButton>
-                                    <hr className="mb-2" />
-                                    <p className="mb-2">Filters on all pages</p>
-                                    <CButton color="secondary" variant="outline" className="w-100">
-                                        Add data fields here
-                                    </CButton>
-                                </CCardBody>
-                            </CCard>
+                            <FiltersCard
+                                searchQuery={searchQuery}
+                                setSearchQuery={setSearchQuery}
+                            />
                         </CCol>
 
                         <CCol md="4">
@@ -244,6 +319,13 @@ const Dashboard = () => {
                             <CCard className="h-100 mb-0">
                                 <CCardHeader>Data</CCardHeader>
                                 <CCardBody className="p-0">
+                                    <CButton
+                                        color="primary"
+                                        className="w-100 mb-2"
+                                        onClick={handleNewQuery}
+                                    >
+                                        New Query
+                                    </CButton>
                                     <CDropdown className="w-100">
                                         <CDropdownToggle color="white" className="w-100">
                                             {selectedDataSource}
@@ -283,8 +365,8 @@ const Dashboard = () => {
                                                     onSelect={handleTableSelect}
                                                     selectedDataSource={selectedDataSource}
                                                     selectedDataSourceType={selectedDataSourceType}
-                                                    selectedColumns={selectedColumns} // Pass selectedColumns
-                                                    setSelectedColumns={setSelectedColumns} // Pass setSelectedColumns
+                                                    selectedColumns={selectedColumns}
+                                                    setSelectedColumns={setSelectedColumns}
                                                 />
                                             </div>
                                         </>
@@ -300,3 +382,32 @@ const Dashboard = () => {
 }
 
 export default Dashboard
+
+const DashboardGraphs = () => (
+    <div
+        className="d-flex flex-column align-items-center justify-content-center flex-grow-1"
+        style={{ border: "1px dashed #ddd" }}
+    >
+        <h4 className="mb-2">Dashboard Graphs</h4>
+        <img src="https://via.placeholder.com/300x150" alt="Graph placeholder" />
+        <p>Add graphs or charts representing your data.</p>
+    </div>
+)
+
+const FiltersCard = ({ searchQuery, setSearchQuery }) => (
+    <CCard className="h-100 mb-0">
+        <CCardHeader>Filters</CCardHeader>
+        <CCardBody>
+            <CFormInput
+                placeholder="Search"
+                className="mb-2"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchQuery}
+            />
+            <p className="mb-2">Filters on this page</p>
+            <CButton color="secondary" variant="outline" className="w-100 mb-2">
+                Add data fields here
+            </CButton>
+        </CCardBody>
+    </CCard>
+)

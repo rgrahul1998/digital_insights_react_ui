@@ -12,8 +12,6 @@ import DataIntegration from "./components/DataIntegration"
 import ProductPortfolio from "./components/ProductPortfiolio"
 import CustomerManagement from "./components/CustomerManagement"
 import BlogSlider from "./components/BlogSlider"
-import Chaticon from "./components/ChatInterface"
-// import CookieConsent from "./components/CookieConsent"
 
 export default function LandingPage() {
     // eslint-disable-next-line

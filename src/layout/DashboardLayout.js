@@ -5,7 +5,7 @@ import { CContainer } from "@coreui/react"
 
 const DashboardLayout = () => {
     return (
-        <div style={{ height: "910px", display: "flex", overflow: "hidden" }}>
+        <div style={{ height: "900px", display: "flex", overflow: "hidden" }}>
             <AppSidebar />
             <div
                 className="wrapper d-flex flex-column"

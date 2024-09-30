@@ -16,7 +16,7 @@ export const DataSourceListApi = async () => {
                 "database_type",
                 "allow_imports",
             ],
-            filters: {},
+            filters: {"database_type": "SQLite"},
             limit: 100,
             limit_page_length: 100,
             limit_start: 0,

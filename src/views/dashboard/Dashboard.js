@@ -18,18 +18,12 @@ import DashboardHeader from "./DashboardHeader"
 import { DataSourceListApi } from "../../api/DataSourceListApi"
 import { fetchTables } from "../../api/VisualQueryApi"
 import TreeView from "./TreeView"
-import {
-    FaDollarSign,
-    FaChartLine,
-    FaChartPie,
-    FaTable,
-    FaFilter,
-    FaTextHeight,
-} from "react-icons/fa" // Import specific icons
-import { AiOutlineLineChart, AiOutlineBarChart } from "react-icons/ai"
-import { IoIosStats } from "react-icons/io"
-import { RiPieChart2Line, RiFileChartLine } from "react-icons/ri"
 import API_URL from "../../config"
+import DashboardGraphs from "./DashboardGraphs"
+import FiltersCard from "./FiltersCard"
+import IconsList from "./IconsList"
+import DataDropdown from "./DataDropdown"
+import TablePreview from "./TablePreview"
 
 const Dashboard = () => {
     // State hooks
@@ -44,6 +38,11 @@ const Dashboard = () => {
     const [searchQuery, setSearchQuery] = useState("")
     const [tableSearchQuery, setTableSearchQuery] = useState("")
     const [showTablePreview, setShowTablePreview] = useState(false) // NEW state for table visibility
+    const [data, setData] = useState([]) // NEW state to store table data
+    const [isTablePreviewed, setIsTablePreviewed] = useState(false)
+    const [selectedChartType, setSelectedChartType] = useState(null) // NEW state for chart type
+    const [xAxisColumn, setXAxisColumn] = useState(null)
+    const [yAxisColumn, setYAxisColumn] = useState(null)
 
     useEffect(() => {
         const fetchDataSources = async () => {
@@ -92,15 +91,14 @@ const Dashboard = () => {
 
     const handleExecute = async () => {
         // Check if there is a selected data source, table, and columns
-        if (!selectedDataSource || selectedTables.length === 0 || selectedColumns.length === 0) {
+        if (!selectedDataSource || selectedTables.length === 0) {
             console.error("Please select a data source, table, and columns.")
             return
         }
 
-        // Prepare payload
         const payload = {
             data_source: selectedDataSource,
-            table: selectedTables, // Assuming you are selecting one table at a time
+            table: selectedTables,
             columns: selectedColumns,
         }
 
@@ -119,9 +117,10 @@ const Dashboard = () => {
 
             if (response.ok) {
                 const data = await response.json()
-                console.log("Table data retrieved:", data)
-                // Handle the response data, e.g., display table preview
+                console.log("Table data retrieved:", data.message)
+                setData(data.message)
                 setShowTablePreview(true)
+                setIsTablePreviewed(true) // Mark table as previewed
             } else {
                 console.error("Failed to retrieve table data")
             }
@@ -161,22 +160,9 @@ const Dashboard = () => {
         }
     }
 
-    const icons = [
-        { label: "Number", icon: <FaDollarSign /> },
-        { label: "Trend", icon: <AiOutlineLineChart /> },
-        { label: "Line", icon: <IoIosStats /> },
-        { label: "Scatter", icon: <AiOutlineBarChart /> },
-        { label: "Bar", icon: <FaChartLine /> },
-        { label: "Row", icon: <RiFileChartLine /> },
-        { label: "Pie", icon: <FaChartPie /> },
-        { label: "Funnel", icon: <RiPieChart2Line /> },
-        { label: "Table", icon: <FaTable /> },
-        { label: "Progress", icon: <AiOutlineBarChart /> },
-        { label: "Mixed Axis", icon: <FaChartLine /> },
-        { label: "Filter", icon: <FaFilter /> },
-        { label: "Text", icon: <FaTextHeight /> },
-        { label: "Pivot Table", icon: <FaTable /> },
-    ]
+    const handleIconClick = (chartType) => {
+        setSelectedChartType(chartType)
+    }
 
     return (
         <CContainer fluid>
@@ -185,41 +171,21 @@ const Dashboard = () => {
                 <CCol lg="7" className="d-flex flex-column">
                     {/* Upper Section: Dashboard Graphs */}
                     <CCol className="d-flex flex-column mb-4">
-                        <DashboardGraphs />
+                        <DashboardGraphs
+                            selectedChartType={selectedChartType}
+                            xAxisColumn={xAxisColumn}
+                            yAxisColumn={yAxisColumn}
+                            data={data}
+                        />
                     </CCol>
 
                     {/* Lower Section: Table Preview */}
                     <CCol className="d-flex flex-column">
-                        <div
-                            className="d-flex flex-column align-items-center justify-content-center flex-grow-1"
-                            style={{ border: "1px dashed #ddd" }}
-                        >
-                            <h4 className="mb-2">Preview Table</h4>
-                            <CButton color="primary" onClick={handleExecute}>
-                                Execute
-                            </CButton>
-                            {/* Conditionally render table */}
-                            {showTablePreview && (
-                                <table className="table mt-3">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Column 1</th>
-                                            <th scope="col">Column 2</th>
-                                            <th scope="col">Column 3</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row">1</th>
-                                            <td>Data 1</td>
-                                            <td>Data 2</td>
-                                            <td>Data 3</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            )}
-                        </div>
+                        <TablePreview
+                            data={data}
+                            showTablePreview={showTablePreview}
+                            handleExecute={handleExecute}
+                        />
                     </CCol>
                 </CCol>
 
@@ -236,31 +202,7 @@ const Dashboard = () => {
                             <CCard className="h-100 mb-0">
                                 <CCardHeader>Visualizations</CCardHeader>
                                 <CCardBody className="p-0">
-                                    <div className="d-flex flex-wrap">
-                                        {icons.map((item, index) => (
-                                            <div
-                                                key={index}
-                                                style={{
-                                                    width: "25%", // Controls number of icons per row
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                <div style={{ fontSize: "1.2rem", color: "#333" }}>
-                                                    {item.icon}
-                                                </div>
-                                                {/* Icon size and color */}
-                                                <div
-                                                    style={{
-                                                        fontSize: "0.74rem",
-                                                        color: "#555",
-                                                        marginTop: "0.1rem",
-                                                    }}
-                                                >
-                                                    {item.label}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
+                                    <IconsList onIconClick={handleIconClick} />
                                     <hr className="mb-2" />
                                     <div className="p-2">
                                         <p className="mb-3 fw-bold">Selected Columns</p>
@@ -268,38 +210,21 @@ const Dashboard = () => {
                                             selectedColumns.map((column, index) => (
                                                 <div
                                                     key={index}
-                                                    className="d-flex align-items-center mb-2"
+                                                    className="d-flex align-items-center mb-2 border rounded p-2"
                                                     style={{
-                                                        width: "100%",
-                                                        padding: "0.5rem",
-                                                        border: "1px solid #e5e5e5",
-                                                        borderRadius: "0.2rem",
                                                         backgroundColor: "#f9f9f9",
+                                                        border: "1px solid #e5e5e5",
                                                     }}
                                                 >
                                                     <span
-                                                        style={{
-                                                            flexGrow: 1,
-                                                            whiteSpace: "nowrap",
-                                                            overflow: "hidden",
-                                                            textOverflow: "ellipsis",
-                                                            fontSize: "0.9rem",
-                                                        }}
-                                                        title={column} // Tooltip with full column name
+                                                        className="flex-grow-1 text-truncate"
+                                                        title={column.label}
+                                                        style={{ fontSize: "0.9rem" }}
                                                     >
-                                                        {column}
+                                                        {column.label}
                                                     </span>
                                                     <button
-                                                        style={{
-                                                            fontSize: "0.75rem",
-                                                            width: "1.25rem",
-                                                            height: "1.25rem",
-                                                            lineHeight: "1.25rem",
-                                                            border: "none",
-                                                            background: "none",
-                                                            color: "#dc3545",
-                                                            cursor: "pointer",
-                                                        }}
+                                                        className="btn btn-link text-danger p-0 ms-2"
                                                         onClick={() => handleColumnRemove(column)}
                                                         aria-label="Remove column"
                                                     >
@@ -310,7 +235,49 @@ const Dashboard = () => {
                                         ) : (
                                             <p className="text-muted">No columns selected</p>
                                         )}
+
+                                        {/* New Dropdowns for X-axis and Y-axis */}
+                                        <div className="mt-3">
+                                            <p className="fw-bold">X-axis</p>
+                                            <select
+                                                value={xAxisColumn || ""}
+                                                onChange={(e) => setXAxisColumn(e.target.value)}
+                                                className="form-select"
+                                            >
+                                                <option value="" disabled>
+                                                    Select X-axis column
+                                                </option>
+                                                {selectedColumns
+                                                    .filter((col) => col.type !== "Integer")
+                                                    .map((col, index) => (
+                                                        <option key={index} value={col.label}>
+                                                            {col.label}
+                                                        </option>
+                                                    ))}
+                                            </select>
+                                        </div>
+
+                                        <div className="mt-3">
+                                            <p className="fw-bold">Y-axis</p>
+                                            <select
+                                                value={yAxisColumn || ""}
+                                                onChange={(e) => setYAxisColumn(e.target.value)}
+                                                className="form-select"
+                                            >
+                                                <option value="" disabled>
+                                                    Select Y-axis column
+                                                </option>
+                                                {selectedColumns
+                                                    .filter((col) => col.type === "Integer")
+                                                    .map((col, index) => (
+                                                        <option key={index} value={col.label}>
+                                                            {col.label}
+                                                        </option>
+                                                    ))}
+                                            </select>
+                                        </div>
                                     </div>
+
                                     <hr className="mb-0" />
                                 </CCardBody>
                             </CCard>
@@ -327,28 +294,11 @@ const Dashboard = () => {
                                     >
                                         New Query
                                     </CButton>
-                                    <CDropdown className="w-100">
-                                        <CDropdownToggle color="white" className="w-100">
-                                            {selectedDataSource}
-                                        </CDropdownToggle>
-                                        <CDropdownMenu
-                                            style={{ maxHeight: "300px", overflowY: "auto" }}
-                                        >
-                                            {dataSources.map((source) => (
-                                                <CDropdownItem
-                                                    key={source.name}
-                                                    onClick={() =>
-                                                        handleDataSourceSelect(
-                                                            source.name,
-                                                            source.database_type,
-                                                        )
-                                                    }
-                                                >
-                                                    {source.title}
-                                                </CDropdownItem>
-                                            ))}
-                                        </CDropdownMenu>
-                                    </CDropdown>
+                                    <DataDropdown
+                                        dataSources={dataSources}
+                                        selectedDataSource={selectedDataSource}
+                                        handleDataSourceSelect={handleDataSourceSelect}
+                                    />
 
                                     {selectedDataSource !== "Select data source" && (
                                         <>
@@ -383,32 +333,3 @@ const Dashboard = () => {
 }
 
 export default Dashboard
-
-const DashboardGraphs = () => (
-    <div
-        className="d-flex flex-column align-items-center justify-content-center flex-grow-1"
-        style={{ border: "1px dashed #ddd" }}
-    >
-        <h4 className="mb-2">Dashboard Graphs</h4>
-        <img src="https://via.placeholder.com/300x150" alt="Graph placeholder" />
-        <p>Add graphs or charts representing your data.</p>
-    </div>
-)
-
-const FiltersCard = ({ searchQuery, setSearchQuery }) => (
-    <CCard className="h-100 mb-0">
-        <CCardHeader>Filters</CCardHeader>
-        <CCardBody>
-            <CFormInput
-                placeholder="Search"
-                className="mb-2"
-                onChange={(e) => setSearchQuery(e.target.value)}
-                value={searchQuery}
-            />
-            <p className="mb-2">Filters on this page</p>
-            <CButton color="secondary" variant="outline" className="w-100 mb-2">
-                Add data fields here
-            </CButton>
-        </CCardBody>
-    </CCard>
-)

@@ -2,6 +2,8 @@ import React, { useState } from "react"
 import { CListGroup, CListGroupItem } from "@coreui/react"
 import axios from "axios"
 import API_URL from "../../config"
+import { CIcon } from "@coreui/icons-react"
+import { cilCalendar, cilCalculator } from "@coreui/icons" // Icons for date and integer
 
 const TreeNode = ({
     node,
@@ -17,11 +19,12 @@ const TreeNode = ({
 
     const handleToggle = (e) => {
         e.stopPropagation()
-        setExpanded(!expanded)
+        setExpanded((prevExpanded) => !prevExpanded)
     }
 
     const handleSelect = () => {
         if (!childNodes) {
+            // Fetch child nodes (columns) if not already loaded
             setLoading(true)
             axios
                 .post(
@@ -35,17 +38,14 @@ const TreeNode = ({
                     },
                 )
                 .then((response) => {
-                    const columns = response.data.message
-                    const fetchedChildNodes = columns.map((column, index) => ({
-                        id: `${node.id}-${index}`,
-                        label: column.column,
-                    }))
-                    setChildNodes(fetchedChildNodes)
+                    const columns = response.data.message || []
+                    setChildNodes(columns)
                     setLoading(false)
                 })
                 .catch((error) => {
                     console.error("API Error:", error)
                     setLoading(false)
+                    setChildNodes([])
                 })
         }
         onSelect(node.label)
@@ -53,12 +53,24 @@ const TreeNode = ({
 
     const handleCheckboxChange = (child) => {
         setSelectedColumns((prev) => {
-            if (prev.includes(child.label)) {
-                return prev.filter((col) => col !== child.label) // Remove if already selected
+            const isAlreadySelected = prev.find((col) => col.label === child.label)
+            if (isAlreadySelected) {
+                return prev.filter((col) => col.label !== child.label) // Remove if already selected
             } else {
-                return [...prev, child.label] // Add if not selected
+                return [...prev, child]
             }
         })
+    }
+
+    const getIconForType = (type) => {
+        switch (type) {
+            case "Integer":
+                return <CIcon icon={cilCalculator} size="sm" className="me-2" />
+            case "Date":
+                return <CIcon icon={cilCalendar} size="sm" className="me-2" />
+            default:
+                return null // No icon for other types
+        }
     }
 
     return (
@@ -94,7 +106,7 @@ const TreeNode = ({
                 <div style={{ marginLeft: "1rem" }}>
                     {childNodes.map((child) => (
                         <div
-                            key={child.id}
+                            key={child.id || child.label}
                             className="d-flex align-items-center py-1"
                             style={{ fontSize: "0.9rem" }}
                         >
@@ -102,8 +114,9 @@ const TreeNode = ({
                                 type="checkbox"
                                 className="me-2"
                                 onChange={() => handleCheckboxChange(child)}
-                                checked={selectedColumns.includes(child.label)} // Check if this column is selected
+                                checked={selectedColumns.some((col) => col.label === child.label)}
                             />
+                            {getIconForType(child.type)} {/* Render icon based on type */}
                             <span>{child.label}</span>
                         </div>
                     ))}
@@ -130,7 +143,7 @@ const TreeView = ({
                 selectedDataSource={selectedDataSource}
                 selectedDataSourceType={selectedDataSourceType}
                 selectedColumns={selectedColumns}
-                setSelectedColumns={setSelectedColumns} // Pass the setSelectedColumns function
+                setSelectedColumns={setSelectedColumns}
             />
         ))}
     </CListGroup>

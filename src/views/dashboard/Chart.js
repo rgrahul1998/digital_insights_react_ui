@@ -10,10 +10,13 @@ import FiltersCard from "./FiltersCard"
 import DataDropdown from "./DataDropdown"
 import TablePreview from "./TablePreview"
 import VisualizationSection from "./VisualizationSection"
+import Chaticon from "../../landing-page/components/ChatInterface" // Importing Chaticon
 import { AppHeader, AppSidebar } from "../../components"
+import { useParams } from "react-router-dom"
 
 
-const Dashboard = () => {
+const Chart = () => {
+    const { queryName } = useParams()
     // State hooks
     const [dataSources, setDataSources] = useState([])
     const [loading, setLoading] = useState(true)
@@ -49,7 +52,7 @@ const Dashboard = () => {
 
     // Fetch Tables when Data Source is selected
     useEffect(() => {
-        if (!selectedDataSource) return
+        if (!selectedDataSource || selectedDataSource === "Select data source") return
 
         const fetchTablesHandler = async () => {
             try {
@@ -74,27 +77,45 @@ const Dashboard = () => {
         setSelectedTables([]) // Clear selected tables
     }
 
-    const handleTableSelect = (tableName) => {
+    const handleTableSelect = async (tableName) => {
         if (!selectedTables.includes(tableName)) {
-            setSelectedTables((prev) => [...prev, tableName])
+            const updatedTables = [...selectedTables, tableName]
+            setSelectedTables(updatedTables)
+
+            // Call handleExecute with the updated table name(s)
+            await handleExecute(updatedTables)
+        }
+    }
+    useEffect(() => {
+        if (selectedColumns.length >= 0 && selectedTables.length > 0) {
+            handleExecute(selectedTables, selectedColumns)
+        }
+    }, [selectedColumns, selectedTables])
+
+    const handleColumnSelect = (columnName) => {
+        if (!selectedColumns.includes(columnName)) {
+            setSelectedColumns((prevColumns) => [...prevColumns, columnName])
         }
     }
 
     const handleColumnRemove = (column) => {
-        setSelectedColumns((prev) => prev.filter((col) => col !== column))
+        setSelectedColumns((prevColumns) => prevColumns.filter((col) => col !== column))
     }
 
     // Execute Query and Fetch Table Data
-    const handleExecute = async () => {
-        if (!selectedDataSource || selectedTables.length === 0) {
-            console.error("Please select a data source, table, and columns.")
+    const handleExecute = async (
+        tablesToFetch = selectedTables,
+        columnsToFetch = selectedColumns,
+    ) => {
+        if (!selectedDataSource || tablesToFetch.length === 0) {
+            console.error("Please select a data source and table.")
             return
         }
 
         const payload = {
             data_source: selectedDataSource,
-            table: selectedTables,
-            columns: selectedColumns,
+            table: tablesToFetch,
+            columns: columnsToFetch,
         }
 
         try {
@@ -115,35 +136,10 @@ const Dashboard = () => {
                 setShowTablePreview(true)
                 setIsTablePreviewed(true)
             } else {
-                console.error("Failed to retrieve table data")
+                console.error("Failed to retrieve table data.")
             }
         } catch (error) {
             console.error("An error occurred while fetching table data:", error)
-        }
-    }
-
-    // New Query Handler
-    const handleNewQuery = async () => {
-        const payload = { is_assisted_query: 1, title: "ABC" }
-
-        try {
-            const response = await fetch(
-                `${API_URL}/api/method/insights.api.queries.create_query`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload),
-                },
-            )
-
-            if (response.ok) {
-                const result = await response.json()
-                console.log("New query created:", result.message.name)
-            } else {
-                console.error("Failed to create query")
-            }
-        } catch (error) {
-            console.error("An error occurred:", error)
         }
     }
 
@@ -162,18 +158,21 @@ const Dashboard = () => {
     )
 
     return (
-        <div>
+        <div style={{ height: "100vh", overflow: "hidden" }}>
             <AppSidebar />
-            <div className="wrapper d-flex flex-column">
+            <div className="wrapper d-flex flex-column" style={{ height: "100vh" }}>
                 <AppHeader />
-                <div>
-                    <CContainer fluid>
+                <div style={{ flex: 1, overflow: "auto" }}>
+                    <CContainer fluid style={{ height: "93%" }}>
                         <DashboardHeader />
-                        <CRow className="gx-0 min-vh-100">
+                        <CRow className="gx-0 mt-0 h-100">
                             {/* Left Section */}
-                            <CCol lg="7" className="d-flex flex-column">
+                            <CCol lg="7" className="d-flex flex-column h-100">
                                 {/* Upper Section: Dashboard Graphs */}
-                                <CCol className="d-flex flex-column mb-4">
+                                <CCol
+                                    className="d-flex flex-column mb-4"
+                                    style={{ flex: "0 0 auto" }}
+                                >
                                     <DashboardGraphs
                                         selectedChartType={selectedChartType}
                                         xAxisColumn={xAxisColumn}
@@ -183,27 +182,35 @@ const Dashboard = () => {
                                 </CCol>
 
                                 {/* Lower Section: Table Preview */}
-                                <CCol className="d-flex flex-column">
-                                    <TablePreview
-                                        data={data}
-                                        showTablePreview={showTablePreview}
-                                        handleExecute={handleExecute}
-                                    />
+                                <CCol
+                                    className="d-flex flex-column flex-grow-1"
+                                    style={{ overflowY: "auto", maxHeight: "100%" }}
+                                >
+                                    <TablePreview data={data} showTablePreview={showTablePreview} />
                                 </CCol>
                             </CCol>
 
                             {/* Right Section */}
-                            <CCol lg="5" className="d-flex flex-column">
-                                <CRow className="gx-0 flex-grow-1">
-                                    {/* Filters and Visualization */}
-                                    <CCol md="4">
+                            <CCol lg="5" className="d-flex flex-column h-100">
+                                <CRow className="gx-0 flex-grow-1 h-100">
+                                    {/* Filters Section */}
+                                    <CCol
+                                        md="4"
+                                        className="d-flex flex-column"
+                                        style={{ overflowY: "auto", maxHeight: "100%" }}
+                                    >
                                         <FiltersCard
                                             searchQuery={searchQuery}
                                             setSearchQuery={setSearchQuery}
                                         />
                                     </CCol>
 
-                                    <CCol md="4">
+                                    {/* Visualization Section */}
+                                    <CCol
+                                        md="4"
+                                        className="d-flex flex-column"
+                                        style={{ overflowY: "auto", maxHeight: "100%" }}
+                                    >
                                         <VisualizationSection
                                             selectedColumns={selectedColumns}
                                             xAxisColumn={xAxisColumn}
@@ -216,7 +223,11 @@ const Dashboard = () => {
                                     </CCol>
 
                                     {/* Data Section */}
-                                    <CCol md="4">
+                                    <CCol
+                                        md="4"
+                                        className="d-flex flex-column"
+                                        style={{ overflowY: "auto", maxHeight: "100%" }}
+                                    >
                                         <CCard className="h-100 mb-0">
                                             <CCardHeader>Data</CCardHeader>
                                             <CCardBody className="p-0">
@@ -237,7 +248,7 @@ const Dashboard = () => {
                                                         />
                                                         <div
                                                             style={{
-                                                                height: "700px",
+                                                                height: "650px",
                                                                 overflowY: "auto",
                                                             }}
                                                         >
@@ -267,8 +278,12 @@ const Dashboard = () => {
                     </CContainer>
                 </div>
             </div>
+            {/* Chat icon floating at bottom right */}
+            <div style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 1000 }}>
+                <Chaticon />
+            </div>
         </div>
     )
 }
 
-export default Dashboard
+export default Chart

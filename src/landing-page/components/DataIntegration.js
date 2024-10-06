@@ -6,68 +6,38 @@ import Stack from "@mui/material/Stack"
 export default function DataIntegration() {
     return (
         <Box
-            id="product"
-            sx={(theme) => ({
-                width: "100%",
-                backgroundImage:
-                    theme.palette.mode === "light"
-                        ? "linear-gradient(180deg, #CEE5FD, #FFF)"
-                        : `linear-gradient(#02294F, ${alpha("#090E10", 0.0)})`,
-                backgroundSize: "100% 20%",
-                backgroundRepeat: "no-repeat",
-            })}
+            id="highlights"
+            sx={{
+                pt: { xs: 4, sm: 12 },
+                pb: { xs: 8, sm: 16 },
+                color: "white",
+                // bgcolor: "#153859",
+            }}
         >
-            <Container
-                maxWidth="50%"
-                sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    pt: { xs: 3, sm: 5 },
-                    pb: { xs: 3, sm: 5 },
-                    maxWidth: "80%",
-                }}
-            >
-                <Stack>
-                    <Typography
-                        variant="h1"
-                        sx={{
-                            display: "flex",
-                            flexDirection: { xs: "column", md: "row" },
-                            alignSelf: "center",
-                            textAlign: "center",
-                            fontSize: "clamp(3rem, 10vw, 4rem)",
-                            color: "black",
-                        }}
-                    >
-                        Data Integration and Automation
-                    </Typography>
-                </Stack>
-                <Grid container spacing={4} sx={{ height: "100%" }}>
+            <Container maxWidth="50%" sx={{ mt: 4, maxWidth: "80%" }}>
+                <Grid container sx={{ height: "100%" }}>
                     <Grid
                         item
                         xs={12}
-                        md={5}
+                        md={6}
                         sx={{
                             display: "flex",
                             flexDirection: "column",
-                            alignItems: "flex-start",
+                            alignItems: "center",
                             justifyContent: "center",
                             p: 3,
-                            textAlign: "left", // Left text alignment for modern design
+                            height: { xs: "auto", md: "600px" },
+                            backgroundColor: "background.paper",
+                            // borderRight: { md: '1px solid #e0e0e0' },
+                            textAlign: { xs: "center", md: "center" }, // Center text alignment
                         }}
                     >
                         <Typography
                             variant="h3"
                             gutterBottom
-                            sx={{
-                                fontWeight: "bold",
-                                color: "primary.main",
-                                lineHeight: 1.2,
-                                fontSize: { xs: "2rem", md: "2.5rem" },
-                            }}
+                            sx={{ fontWeight: "bold", color: "primary.main" }}
                         >
-                            The flexibility of Excel. The power of automation.
+                            Data Integration and Automation
                         </Typography>
                         <Typography
                             variant="h6"
@@ -75,7 +45,7 @@ export default function DataIntegration() {
                                 mt: 2,
                                 lineHeight: 1.7,
                                 color: "text.secondary",
-                                fontSize: { xs: "1rem", md: "1.125rem" },
+                                textAlign: "center",
                             }}
                         >
                             Automation allows you to keep working in your Excel environment with
@@ -86,16 +56,31 @@ export default function DataIntegration() {
                     <Grid
                         item
                         xs={12}
-                        md={7}
+                        md={6}
                         sx={{
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             p: 3,
+                            backgroundColor: "background.default",
                         }}
                     >
-                        <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                            <Dataflow />
+                        <Box sx={{ width: "100%" }}>
+                            <video
+                                width="100%"
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                controls={false}
+                                style={{ width: "100%", borderRadius: 8 }} // Rounded corners and subtle shadow for the video
+                            >
+                                <source
+                                    src="src\assets\videos\Purple and White Minimalist Consumer Analysis Graph.mp4"
+                                    type="video/mp4"
+                                />
+                                Your browser does not support the video tag.
+                            </video>
                         </Box>
                     </Grid>
                 </Grid>

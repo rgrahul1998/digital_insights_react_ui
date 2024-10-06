@@ -1,7 +1,6 @@
 import React from "react"
-import { CButton } from "@coreui/react"
 
-const TablePreview = ({ data, showTablePreview, handleExecute }) => {
+const TablePreview = ({ data, showTablePreview }) => {
     return (
         <div
             className="d-flex flex-column align-items-center justify-content-center flex-grow-1"
@@ -12,15 +11,9 @@ const TablePreview = ({ data, showTablePreview, handleExecute }) => {
                 borderRadius: "8px",
             }}
         >
-            <h4 className="mb-3">Preview Table</h4>
-            <CButton color="primary" onClick={handleExecute} className="mb-3">
-                Execute
-            </CButton>
-
             {showTablePreview && (
                 <div
                     style={{
-                        maxHeight: "400px",
                         width: "100%",
                         overflowY: "auto",
                         border: "1px solid #ddd",

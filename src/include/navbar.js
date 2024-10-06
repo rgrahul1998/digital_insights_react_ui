@@ -153,11 +153,11 @@ function NavBar() {
                         ) : (
                             <>
                                 <Nav.Link href="/login">Login</Nav.Link>
-                                <Nav.Link href="/request-demo">
-                                    <Button variant="primary">Request Demo</Button>
-                                </Nav.Link>
                             </>
                         )}
+                        <Nav.Link href="/request-demo">
+                            <Button variant="primary">Request Demo</Button>
+                        </Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Container>

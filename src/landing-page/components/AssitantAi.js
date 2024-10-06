@@ -4,7 +4,14 @@ import Container from "@mui/material/Container"
 import Grid from "@mui/material/Grid"
 import Typography from "@mui/material/Typography"
 
-export default function AssitantAi() {
+// The single item object
+const item = {
+    name: "Image 1",
+    description: "Description for Image 1",
+    imgPath: "/src/assets/images/assistant_ai.png", // Ensure the correct path or import
+}
+
+export default function AssistantAi() {
     return (
         <Box
             id="highlights"
@@ -66,21 +73,13 @@ export default function AssitantAi() {
                         }}
                     >
                         <Box sx={{ width: "100%" }}>
-                            <video
-                                width="100%"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                controls={false}
-                                style={{ width: "100%", borderRadius: 8 }} // Rounded corners and subtle shadow for the video
-                            >
-                                <source
-                                    src="src\assets\videos\Purple and White Minimalist Consumer Analysis Graph.mp4"
-                                    type="video/mp4"
+                            <div style={{ position: "relative", textAlign: "center" }}>
+                                <img
+                                    src={item.imgPath} // Use the imgPath from the item object
+                                    alt={item.name}
+                                    style={{ width: "100%", borderRadius: 8 }}
                                 />
-                                Your browser does not support the video tag.
-                            </video>
+                            </div>
                         </Box>
                     </Grid>
                 </Grid>

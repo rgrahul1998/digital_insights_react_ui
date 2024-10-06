@@ -11,6 +11,8 @@ import DataFusion from "./pages/DataFusion"
 import Press from "./pages/Press"
 import Pricing from "./pages/Pricing"
 import OurTeam from "./pages/OurTeam"
+// import ChatWindow from "./views/api/components/ChatWindow"
+// import Apps from "../src/views/api/App"
 
 // Lazy-loaded components
 const NavBar = React.lazy(() => import("./include/navbar"))
@@ -21,7 +23,8 @@ const Onboarding = React.lazy(() => import("./pages/onboarding"))
 const ContactUs = React.lazy(() => import("./pages/contact_us"))
 const RequestDemo = React.lazy(() => import("./pages/request_demo"))
 const LandingPage = React.lazy(() => import("./landing-page/LandingPage"))
-const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"))
+const DashboardLayout = React.lazy(() => import("./views/dashboard/DashboardLayout"))
+const Chart = React.lazy(() => import("./views/dashboard/Chart"))
 const Query = React.lazy(() => import("./views/query/Query"))
 const TableList = React.lazy(() => import("./views/data_connect/TableList"))
 const QueryPage = React.lazy(() => import("./views/query/QueryPage"))
@@ -92,7 +95,12 @@ const Main = () => {
                     <Route
                         exact
                         path="/dashboard"
-                        element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
+                        element={isAuthenticated ? <DashboardLayout /> : <Navigate to="/login" />}
+                    />
+                    <Route
+                        exact
+                        path="/dashboard/chart/:queryName"
+                        element={isAuthenticated ? <Chart /> : <Navigate to="/login" />}
                     />
                     <Route
                         exact

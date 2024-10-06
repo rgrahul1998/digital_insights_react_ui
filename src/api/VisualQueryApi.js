@@ -1,4 +1,41 @@
 import API_URL from "../config"
+import axios from "axios";
+
+// Function to fetch all queries with filters and pagination
+export const fetchAllQueries = async () => {
+    try {
+        const response = await axios.post(`${API_URL}/api/method/insights.api.queries.get_queries`, {
+            debug: 0,
+            doctype: "Insights Query",
+            fields: [
+                "name",
+                "title",
+                "status",
+                "is_assisted_query",
+                "is_native_query",
+                "is_script_query",
+                "is_stored",
+                "data_source",
+                "creation",
+                "owner",
+                "owner_name",
+                "owner_image",
+                "chart_type",
+            ],
+            filters: {},  // Add any filtering logic here if required
+            limit: 50,
+            limit_page_length: 50,
+            limit_start: 0,
+            order_by: "creation desc",
+            start: 0,
+        });
+
+        return response.data.message; // Assuming the data is in response.data.message
+    } catch (error) {
+        console.error("Failed to fetch queries:", error);
+        throw new Error("Failed to fetch queries");
+    }
+};
 
 
 export const fetchQueryData = async (queryName) => {
@@ -12,6 +49,25 @@ export const fetchQueryData = async (queryName) => {
             name: queryName,
         }),
     })
+    if (!response.ok) {
+        throw new Error("Failed to fetch query data")
+    }
+    const result = await response.json()
+    return result.message
+}
+
+
+export const getQueryData = async (queryName) => {
+    const response = await fetch(`${API_URL}/api/method/digital_insights.digital_insights.api.get_query_data.get_query_data`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            name: queryName,
+        }),
+    })
+    console.log(response)
     if (!response.ok) {
         throw new Error("Failed to fetch query data")
     }

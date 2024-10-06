@@ -12,6 +12,7 @@ import DataIntegration from "./components/DataIntegration"
 import ProductPortfolio from "./components/ProductPortfiolio"
 import CustomerManagement from "./components/CustomerManagement"
 import BlogSlider from "./components/BlogSlider"
+import Chaticon from "./components/ChatInterface"
 
 export default function LandingPage() {
     // eslint-disable-next-line
@@ -23,7 +24,7 @@ export default function LandingPage() {
             <CssBaseline />
             <Home />
             <Box sx={{ bgcolor: "background.default" }}>
-                <LogoCollection />
+                {/* <LogoCollection /> */}
                 <Divider />
                 <DataIntegration />
                 <Divider />
@@ -38,6 +39,10 @@ export default function LandingPage() {
                 <BlogSlider />
                 <Divider />
             </Box>
+            {/* Chat icon floating at bottom right */}
+            <div style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 1000 }}>
+                <Chaticon />
+            </div>
         </ThemeProvider>
     )
 }

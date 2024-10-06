@@ -1,12 +1,35 @@
-import React from "react"
-import { useNavigate } from "react-router-dom" // Importing useNavigate
+import React, { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { AppHeader, AppSidebar } from "../../components"
-import Chaticon from "../../landing-page/components/ChatInterface" // Importing Chaticon
-import { CButton, CCol, CRow } from "@coreui/react" // Importing CoreUI components
+import {
+    CButton,
+    CCol,
+    CRow,
+    CDropdown,
+    CDropdownToggle,
+    CDropdownMenu,
+    CDropdownItem,
+} from "@coreui/react"
+import { fetchAllQueries } from "../../api/VisualQueryApi"
 import API_URL from "../../config"
 
 const DashboardLayout = () => {
-    const navigate = useNavigate() // Initializing navigate
+    const navigate = useNavigate()
+    const [queries, setQueries] = useState([]) // State to hold queries
+
+    // Fetch queries when component mounts
+    useEffect(() => {
+        const fetchQueries = async () => {
+            try {
+                const result = await fetchAllQueries()
+                setQueries(result)
+            } catch (error) {
+                console.error("Error fetching queries:", error)
+            }
+        }
+
+        fetchQueries()
+    }, [])
 
     const handleCreateNewChart = async () => {
         try {
@@ -27,11 +50,14 @@ const DashboardLayout = () => {
             console.log("New chart created successfully:", data.message)
 
             // Navigate to the new chart page
-            navigate(`/dashboard/chart/${data.message.name}`) // Use data.name to navigate
-
+            navigate(`/dashboard/chart/${data.message.name}`)
         } catch (error) {
             console.error("Error creating new chart:", error)
         }
+    }
+
+    const handleEditChart = (queryName) => {
+        navigate(`/dashboard/chart/${queryName}`)
     }
 
     return (
@@ -56,19 +82,27 @@ const DashboardLayout = () => {
                         </CButton>
                     </CCol>
                     <CCol xs="auto">
-                        <CButton
-                            color="warning"
-                            onClick={() => console.log("Edit Existing Chart clicked")}
-                        >
-                            Edit Existing Chart
-                        </CButton>
+                        {/* Dropdown for editing existing charts */}
+                        <CDropdown>
+                            <CDropdownToggle color="warning">Edit Existing Chart</CDropdownToggle>
+                            <CDropdownMenu style={{ maxHeight: "200px", overflowY: "auto" }}>
+                                {/* Loop through the queries and display them as dropdown items */}
+                                {queries.length > 0 ? (
+                                    queries.map((query) => (
+                                        <CDropdownItem
+                                            key={query.name}
+                                            onClick={() => handleEditChart(query.name)}
+                                        >
+                                            {query.title}
+                                        </CDropdownItem>
+                                    ))
+                                ) : (
+                                    <CDropdownItem disabled>No queries available</CDropdownItem>
+                                )}
+                            </CDropdownMenu>
+                        </CDropdown>
                     </CCol>
                 </CRow>
-            </div>
-
-            {/* Chat icon floating at bottom right */}
-            <div style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 1000 }}>
-                <Chaticon />
             </div>
         </div>
     )

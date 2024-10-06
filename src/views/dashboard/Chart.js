@@ -14,7 +14,6 @@ import Chaticon from "../../landing-page/components/ChatInterface" // Importing 
 import { AppHeader, AppSidebar } from "../../components"
 import { useParams } from "react-router-dom"
 
-
 const Chart = () => {
     const { queryName } = useParams()
     // State hooks
@@ -87,7 +86,7 @@ const Chart = () => {
         }
     }
     useEffect(() => {
-        if (selectedColumns.length >= 0 && selectedTables.length > 0) {
+        if (selectedTables.length > 0 && selectedColumns.length >= 0) {
             handleExecute(selectedTables, selectedColumns)
         }
     }, [selectedColumns, selectedTables])
@@ -116,6 +115,7 @@ const Chart = () => {
             data_source: selectedDataSource,
             table: tablesToFetch,
             columns: columnsToFetch,
+            query_name: queryName,
         }
 
         try {

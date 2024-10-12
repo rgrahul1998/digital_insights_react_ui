@@ -64,7 +64,7 @@ export const getQueryData = async (queryName) => {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            name: queryName,
+            query_name: queryName,
         }),
     })
     console.log(response)

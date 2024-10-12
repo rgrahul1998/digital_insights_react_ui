@@ -22,7 +22,7 @@ const TreeNode = ({
         setExpanded((prevExpanded) => !prevExpanded)
     }
 
-    const handleSelect = () => {
+    const handleTableSelect = () => {
         if (!childNodes) {
             // Fetch child nodes (columns) if not already loaded
             setLoading(true)
@@ -77,7 +77,7 @@ const TreeNode = ({
         <>
             <CListGroupItem
                 className="d-flex align-items-center py-1"
-                onClick={handleSelect}
+                onClick={handleTableSelect}
                 style={{
                     cursor: "pointer",
                     fontSize: "0.9rem",

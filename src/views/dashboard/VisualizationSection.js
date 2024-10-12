@@ -158,7 +158,6 @@ const VisualizationSection = ({
                         </select>
                     </div>
                 </div>
-                <hr className="mb-0" />
             </CCardBody>
         </CCard>
     )

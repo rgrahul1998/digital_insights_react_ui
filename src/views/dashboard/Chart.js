@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react"
 import { CContainer, CRow, CCol, CFormInput, CCard, CCardHeader, CCardBody } from "@coreui/react"
 import DashboardHeader from "./DashboardHeader"
 import { DataSourceListApi } from "../../api/DataSourceListApi"
-import { fetchTables } from "../../api/VisualQueryApi"
+import { fetchTables, getQueryData } from "../../api/VisualQueryApi"
 import TreeView from "./TreeView"
 import API_URL from "../../config"
 import DashboardGraphs from "./DashboardGraphs"
@@ -10,12 +10,13 @@ import FiltersCard from "./FiltersCard"
 import DataDropdown from "./DataDropdown"
 import TablePreview from "./TablePreview"
 import VisualizationSection from "./VisualizationSection"
-import Chaticon from "../../landing-page/components/ChatInterface" // Importing Chaticon
+import Chaticon from "../../landing-page/components/ChatInterface"
 import { AppHeader, AppSidebar } from "../../components"
 import { useParams } from "react-router-dom"
 
 const Chart = () => {
     const { queryName } = useParams()
+
     // State hooks
     const [dataSources, setDataSources] = useState([])
     const [loading, setLoading] = useState(true)
@@ -33,6 +34,36 @@ const Chart = () => {
     const [selectedChartType, setSelectedChartType] = useState(null)
     const [xAxisColumn, setXAxisColumn] = useState(null)
     const [yAxisColumn, setYAxisColumn] = useState(null)
+
+    // Prefill query data from API
+    useEffect(() => {
+        if (queryName) {
+            const prefillData = async () => {
+                try {
+                    const queryData = await getQueryData(queryName)
+                    setSelectedDataSource(queryData.data_source)
+                    setSelectedDataSourceType(queryData.data_source_type)
+
+                    // Fetch and set tables and columns based on queryData
+                    const result = await fetchTables(queryData.data_source)
+                    const transformedTables = result.map(({ name, label }) => ({
+                        id: name,
+                        label,
+                    }))
+                    setTables(transformedTables)
+                    setSelectedTables(queryData.table)
+                    setSelectedColumns(queryData.columns)
+
+                    // Preset the x and y axis columns from the query data
+                    setXAxisColumn(queryData.x_axis_column || null)
+                    setYAxisColumn(queryData.y_axis_column || null)
+                } catch (error) {
+                    setError(error.message)
+                }
+            }
+            prefillData()
+        }
+    }, [queryName])
 
     // Fetch Data Sources
     useEffect(() => {
@@ -80,11 +111,10 @@ const Chart = () => {
         if (!selectedTables.includes(tableName)) {
             const updatedTables = [...selectedTables, tableName]
             setSelectedTables(updatedTables)
-
-            // Call handleExecute with the updated table name(s)
             await handleExecute(updatedTables)
         }
     }
+
     useEffect(() => {
         if (selectedTables.length > 0 && selectedColumns.length >= 0) {
             handleExecute(selectedTables, selectedColumns)

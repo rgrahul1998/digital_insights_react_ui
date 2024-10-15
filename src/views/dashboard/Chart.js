@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react"
+import React, { useEffect, useState, useMemo, useCallback } from "react"
 import { CContainer, CRow, CCol, CFormInput, CCard, CCardHeader, CCardBody } from "@coreui/react"
 import DashboardHeader from "./DashboardHeader"
 import { DataSourceListApi } from "../../api/DataSourceListApi"
@@ -26,14 +26,14 @@ const Chart = () => {
     const [tables, setTables] = useState([])
     const [selectedTables, setSelectedTables] = useState([])
     const [selectedColumns, setSelectedColumns] = useState([])
-    const [searchQuery, setSearchQuery] = useState("")
     const [tableSearchQuery, setTableSearchQuery] = useState("")
     const [showTablePreview, setShowTablePreview] = useState(false)
     const [data, setData] = useState([])
     const [isTablePreviewed, setIsTablePreviewed] = useState(false)
     const [selectedChartType, setSelectedChartType] = useState(null)
-    const [xAxisColumn, setXAxisColumn] = useState(null)
-    const [yAxisColumn, setYAxisColumn] = useState(null)
+    const [xAxisColumn, setXAxisColumn] = useState([])
+    const [yAxisColumn, setYAxisColumn] = useState([])
+    const [filters, setFilters] = useState([]) // New state for filters
 
     // Prefill query data from API
     useEffect(() => {
@@ -55,8 +55,10 @@ const Chart = () => {
                     setSelectedColumns(queryData.columns)
 
                     // Preset the x and y axis columns from the query data
-                    setXAxisColumn(queryData.x_axis_column || null)
-                    setYAxisColumn(queryData.y_axis_column || null)
+                    setXAxisColumn(queryData.x_axis_column || [])
+                    setYAxisColumn(queryData.y_axis_column || [])
+                    setSelectedChartType(queryData.chart_type || [])
+                    setFilters(queryData.filter)
                 } catch (error) {
                     setError(error.message)
                 }
@@ -128,13 +130,39 @@ const Chart = () => {
     }
 
     const handleColumnRemove = (column) => {
-        setSelectedColumns((prevColumns) => prevColumns.filter((col) => col !== column))
+        const columnLabel = column.label // Extract the label from the column object
+
+        setSelectedColumns((prevColumns) => {
+            const updatedColumns = prevColumns.filter((col) => col !== column)
+
+            // Update xAxisColumn if the removed column was part of it
+            if (xAxisColumn.includes(columnLabel)) {
+                setXAxisColumn((prevXAxis) => prevXAxis.filter((xCol) => xCol !== columnLabel))
+            }
+
+            // Update yAxisColumn if the removed column was part of it
+            if (yAxisColumn.includes(columnLabel)) {
+                setYAxisColumn((prevYAxis) => prevYAxis.filter((yCol) => yCol !== columnLabel))
+            }
+
+            return updatedColumns // Return updated selected columns
+        })
     }
+
+    // New function to handle filter changes
+    const handleFiltersChange = useCallback(
+        (newFilters) => {
+            setFilters(newFilters)
+            handleExecute(selectedTables, selectedColumns, newFilters) // Trigger API when filters change
+        },
+        [selectedTables, selectedColumns],
+    )
 
     // Execute Query and Fetch Table Data
     const handleExecute = async (
         tablesToFetch = selectedTables,
         columnsToFetch = selectedColumns,
+        filtersToFetch = filters, // Use filters in the API call
     ) => {
         if (!selectedDataSource || tablesToFetch.length === 0) {
             console.error("Please select a data source and table.")
@@ -146,6 +174,7 @@ const Chart = () => {
             table: tablesToFetch,
             columns: columnsToFetch,
             query_name: queryName,
+            filters: filtersToFetch, // Include filters in the payload
         }
 
         try {
@@ -230,8 +259,9 @@ const Chart = () => {
                                         style={{ overflowY: "auto", maxHeight: "100%" }}
                                     >
                                         <FiltersCard
-                                            searchQuery={searchQuery}
-                                            setSearchQuery={setSearchQuery}
+                                            selectedColumns={selectedColumns}
+                                            data={data}
+                                            onFiltersChange={handleFiltersChange} // Pass down filter change handler
                                         />
                                     </CCol>
 
@@ -249,6 +279,7 @@ const Chart = () => {
                                             setYAxisColumn={setYAxisColumn}
                                             handleIconClick={handleIconClick}
                                             handleColumnRemove={handleColumnRemove}
+                                            queryName={queryName}
                                         />
                                     </CCol>
 

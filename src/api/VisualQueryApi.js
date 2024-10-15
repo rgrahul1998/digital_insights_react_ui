@@ -1,42 +1,44 @@
 import API_URL from "../config"
-import axios from "axios";
+import axios from "axios"
 
 // Function to fetch all queries with filters and pagination
 export const fetchAllQueries = async () => {
     try {
-        const response = await axios.post(`${API_URL}/api/method/insights.api.queries.get_queries`, {
-            debug: 0,
-            doctype: "Insights Query",
-            fields: [
-                "name",
-                "title",
-                "status",
-                "is_assisted_query",
-                "is_native_query",
-                "is_script_query",
-                "is_stored",
-                "data_source",
-                "creation",
-                "owner",
-                "owner_name",
-                "owner_image",
-                "chart_type",
-            ],
-            filters: {},  // Add any filtering logic here if required
-            limit: 50,
-            limit_page_length: 50,
-            limit_start: 0,
-            order_by: "creation desc",
-            start: 0,
-        });
+        const response = await axios.post(
+            `${API_URL}/api/method/insights.api.queries.get_queries`,
+            {
+                debug: 0,
+                doctype: "Insights Query",
+                fields: [
+                    "name",
+                    "title",
+                    "status",
+                    "is_assisted_query",
+                    "is_native_query",
+                    "is_script_query",
+                    "is_stored",
+                    "data_source",
+                    "creation",
+                    "owner",
+                    "owner_name",
+                    "owner_image",
+                    "chart_type",
+                ],
+                filters: {}, // Add any filtering logic here if required
+                limit: 50,
+                limit_page_length: 50,
+                limit_start: 0,
+                order_by: "creation desc",
+                start: 0,
+            },
+        )
 
-        return response.data.message; // Assuming the data is in response.data.message
+        return response.data.message // Assuming the data is in response.data.message
     } catch (error) {
-        console.error("Failed to fetch queries:", error);
-        throw new Error("Failed to fetch queries");
+        console.error("Failed to fetch queries:", error)
+        throw new Error("Failed to fetch queries")
     }
-};
-
+}
 
 export const fetchQueryData = async (queryName) => {
     const response = await fetch(`${API_URL}/api/method/frappe.client.get`, {
@@ -56,18 +58,20 @@ export const fetchQueryData = async (queryName) => {
     return result.message
 }
 
-
 export const getQueryData = async (queryName) => {
-    const response = await fetch(`${API_URL}/api/method/digital_insights.digital_insights.api.get_query_data.get_query_data`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
+    const response = await fetch(
+        `${API_URL}/api/method/digital_insights.digital_insights.api.get_query_data.get_query_data`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                query_name: queryName,
+            }),
         },
-        body: JSON.stringify({
-            query_name: queryName,
-        }),
-    })
-    console.log(response)
+    )
+
     if (!response.ok) {
         throw new Error("Failed to fetch query data")
     }

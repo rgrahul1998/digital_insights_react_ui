@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect } from "react"
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 
 const DashboardGraphs = ({ selectedChartType, xAxisColumn, yAxisColumn, data }) => {
@@ -13,8 +13,8 @@ const DashboardGraphs = ({ selectedChartType, xAxisColumn, yAxisColumn, data }) 
             const headers = data[0].map((header) => header.label) // This should match your headers format
 
             // Determine the indices of x-axis and y-axis columns
-            const xAxisIndex = headers.indexOf(xAxisColumn)
-            const yAxisIndex = headers.indexOf(yAxisColumn)
+            const xAxisIndex = headers.indexOf(xAxisColumn[0])
+            const yAxisIndex = headers.indexOf(yAxisColumn[0])
 
             // Check if the indices are valid
             if (xAxisIndex === -1 || yAxisIndex === -1) {
